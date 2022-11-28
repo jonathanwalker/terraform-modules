@@ -9,7 +9,7 @@ locals {
 data "aws_iam_policy_document" "key_policy" {
     statement {
         sid         = "AllowRootAccess"
-        actions     = "kms:*"
+        actions     = ["kms:*"]
         resources   = ["*"]
         principals {
             type        = "AWS"
