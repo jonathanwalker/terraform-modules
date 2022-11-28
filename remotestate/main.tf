@@ -36,7 +36,7 @@ resource "aws_s3_bucket_public_access_block" "s3_bucket_public_access_block" {
 
 # DynamoDB table for storing state locks
 resource "aws_dynamodb_table" "dynamodb_table" {
-    name           = var.table
+    name           = var.table_name
     billing_mode   = "PAY_PER_REQUEST"
     hash_key       = "LockID"
     read_capacity  = 0
