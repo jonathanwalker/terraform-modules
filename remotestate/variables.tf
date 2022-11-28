@@ -7,21 +7,21 @@ variable "table_name" {
 }
 
 variable "kms_key_admins" {
-    type = "list"
+    type = list(string)
     default = [
         "user/johnny"
     ]
 }
 
 variable "kms_key_users" {
-    type = "list(string)"
+    type = list(string)
     default = [
         "user/johnny"
     ]
 }
 
 variable "tags" {
-    type = "map"
+    type = map
     default = {
         "Name" = "terraform-state"
         "Owner" = "johnny"
