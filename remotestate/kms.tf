@@ -65,7 +65,6 @@ data "aws_iam_policy_document" "key_policy" {
 }
 
 resource "aws_kms_key" "kms_key" {
-    name        = "terraform-state-kms-key"
     description = "Key for the terraform state"
 
     deletion_window_in_days = "14"
