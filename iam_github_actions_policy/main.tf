@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_iam_policy" "policy" {
   name        = var.policy_name
   description = var.policy_description
@@ -23,6 +25,18 @@ data "aws_iam_policy_document" "document" {
     resources = [
       "arn:aws:s3:::${var.bucket_name}",
       "arn:aws:s3:::${var.bucket_name}/*",
+    ]
+  }
+
+  statement {
+    sid = "CloudFrontInvalidation"
+
+    actions = [
+      "cloudfront:CreateInvalidation"
+    ]
+
+    resources = [
+      "arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:distribution/${var.cloudfront_distribution_id}"
     ]
   }
 }
