@@ -5,7 +5,7 @@ data "archive_file" "archive" {
 }
 
 resource "aws_lambda_function" "lambda" {
-  for_each = var.enable_lambda_edge_function ? [1] : []
+  count = var.enable_lambda_edge_function ? 1 : 0
 
   function_name = replace(var.domain_name, ".", "-")
 
@@ -21,7 +21,8 @@ resource "aws_lambda_function" "lambda" {
 }
 
 resource "aws_iam_role" "lambda" {
-  for_each = var.enable_lambda_edge_function ? [1] : []
+  # conditional resource based on variable is true or false
+  count = var.enable_lambda_edge_function ? 1 : 0
 
   name        = "${replace(var.domain_name, ".", "-")}-lambda-edge"
   description = "Lambda@Edge function for ${var.domain_name}"
