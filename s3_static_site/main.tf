@@ -32,7 +32,7 @@ resource "aws_cloudfront_distribution" "distribution" {
       content {
         event_type   = "origin-request"
         include_body = false
-        lambda_arn   = aws_lambda_function.lambda[count.index].arn
+        lambda_arn   = aws_lambda_function.lambda[0].arn
       }
     }
 
