@@ -1,6 +1,46 @@
 # GitHub OIDC Role
 
-Role for GitHub actions through oidc connector provider in AWS. Leveraging the `iam_oidc_connector` module outputs you can create the IAM role using this module. 
+This module allows you to leverage [OpenID Connect](https://openid.net/connect/) with AWS and GitHub to allow for keyless access to GitHub actions runners. Leveraging the `iam_oidc_connector`, `iam_github_actions_policy`, and this module you can create the ability to leverage github actions to write data to S3. This is great for static sites in which you wish to build and push to S3. 
+
+[https://github.com/aws-actions/configure-aws-credentials](https://github.com/aws-actions/configure-aws-credentials)
+
+# Static Site Build Example
+
+This example goes over how to deploy an mkdocs site leveraging github actions. Using the `s3_static_site` module you can create your infrastructure and leverage these modules to deploy your static site on push. 
+
+```
+name: Deploy static site
+on:
+  push:
+    branches:
+      - main
+env:
+  BUCKET_NAME: "example-static-site"
+  ROLE_ARN:    "arn:aws:iam::111111111111:role/my-github-actions-role-test"
+  AWS_REGION:  "us-east-1"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event.repository.fork == false
+    steps:
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - run: pip install mkdocs
+      - run: pip install mkdocs-material 
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - run: mkdocs build
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.ROLE_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Sync static site
+        run: |
+          cd site/
+          aws s3 sync . s3://${{ env.BUCKET_NAME }}/
+```
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
