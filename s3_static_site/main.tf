@@ -26,6 +26,16 @@ resource "aws_cloudfront_distribution" "distribution" {
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
     target_origin_id = aws_s3_bucket.s3_bucket.bucket_regional_domain_name
 
+    dynamic "lambda_function_association" {
+      for_each = var.enable_lambda_edge_function ? [1] : []
+
+      content {
+        event_type   = "origin-request"
+        include_body = false
+        lambda_arn   = aws_lambda_function.lambda.arn
+      }
+    }
+
     forwarded_values {
       query_string = false
 
@@ -35,6 +45,7 @@ resource "aws_cloudfront_distribution" "distribution" {
     }
 
     viewer_protocol_policy = "redirect-to-https"
+    compress               = true
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
@@ -52,7 +63,7 @@ resource "aws_cloudfront_distribution" "distribution" {
     minimum_protocol_version = "TLSv1.2_2019"
   }
 
-  tags = var.tags  
+  tags = var.tags
 }
 
 resource "aws_route53_record" "record" {

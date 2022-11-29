@@ -18,10 +18,15 @@ variable "bucket_name" {
   default = "example.com"
 }
 
+variable "enable_lambda_edge_function" {
+  type    = bool
+  default = false
+}
+
 variable "tags" {
-  type    = map(string)
+  type = map(string)
   default = {
-    "Name" = "example.com"
+    "Name"  = "example.com"
     "Owner" = "johnny"
   }
 }
