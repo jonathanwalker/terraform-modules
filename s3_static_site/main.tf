@@ -3,7 +3,7 @@ resource "aws_cloudfront_origin_access_identity" "oai" {
 }
 
 resource "aws_cloudfront_distribution" "distribution" {
-  depends_on = [aws_cloudfront_origin_access_identity.oia]
+  depends_on = [aws_cloudfront_origin_access_identity.oai]
 
   aliases         = [var.domain_name]
   comment         = "Distribution for ${var.domain_name}"
