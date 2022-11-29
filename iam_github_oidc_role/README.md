@@ -76,6 +76,7 @@ No modules.
 | <a name="input_github_repository_org"></a> [github\_repository\_org](#input\_github\_repository\_org) | The name of the GitHub organization | `string` | n/a | yes |
 | <a name="input_oidc_provider_arn"></a> [oidc\_provider\_arn](#input\_oidc\_provider\_arn) | The ARN of the OIDC provider provided as an output from the iam\_oidc\_connector module | `string` | n/a | yes |
 | <a name="input_policy_arns"></a> [policy\_arns](#input\_policy\_arns) | A list of policy ARNs to attach to the role | `list(string)` | n/a | yes |
+| <a name="input_role_description"></a> [role\_description](#input\_role\_description) | The description of the role to create | `string` | n/a | yes |
 | <a name="input_role_name"></a> [role\_name](#input\_role\_name) | The name of the role to create | `string` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | n/a | `map(any)` | <pre>{<br>  "Name": "github-actions-role",<br>  "Owner": "johnny"<br>}</pre> | no |
 

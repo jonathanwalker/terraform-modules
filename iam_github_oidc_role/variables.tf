@@ -3,6 +3,11 @@ variable "role_name" {
   description = "The name of the role to create"
 }
 
+variable "role_description" {
+  type        = string
+  description = "The description of the role to create"
+}
+
 variable "policy_arns" {
   type        = list(string)
   description = "A list of policy ARNs to attach to the role"
