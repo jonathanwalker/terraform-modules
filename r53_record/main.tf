@@ -1,5 +1,5 @@
 resource "aws_route53_record" "record" {
-  for_each = var.record_map
+  for_each = toset(var.record_map)
 
   zone_id = each.value.zone_id
   name    = each.value.dns_name
