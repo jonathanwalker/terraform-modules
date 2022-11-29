@@ -24,7 +24,6 @@ resource "aws_s3_bucket_policy" "s3_bucket_policy" {
     policy = data.aws_iam_policy_document.s3_bucket_policy.json
 }
 
-# terraform for aws_s3_bucket_server_side_encryption_configuration
 resource "aws_s3_bucket_server_side_encryption_configuration" "s3_bucket_server_side_encryption_configuration" {
     bucket = aws_s3_bucket.s3_bucket.id
     rule {

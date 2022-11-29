@@ -1,9 +1,7 @@
-# terraform cloudfront origin access identity
 resource "aws_cloudfront_origin_access_identity" "oai" {
   comment = "OAI for ${var.domain_name}"
 }
 
-# terraform cloudfront distribution
 resource "aws_cloudfront_distribution" "distribution" {
   depends_on = [aws_cloudfront_distribution.oia]
 
@@ -55,6 +53,18 @@ resource "aws_cloudfront_distribution" "distribution" {
   }
 
   tags = var.tags  
+}
+
+resource "aws_route53_record" "record" {
+  zone_id = var.zone_id
+  name    = var.domain_name
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
+    evaluate_target_health = false
+  }
 }
 
 resource "aws_acm_certificate" "certificate" {
