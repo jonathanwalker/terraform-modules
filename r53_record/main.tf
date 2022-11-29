@@ -6,5 +6,5 @@ resource "aws_route53_record" "record" {
   type    = each.value.record_type
   records = each.value.records
 
-  ttl     = var.record_ttl
+  ttl = var.record_ttl
 }
