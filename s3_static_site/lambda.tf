@@ -13,11 +13,11 @@ resource "aws_lambda_function" "lambda" {
   role             = aws_iam_role.lambda[count.index].arn
   source_code_hash = data.archive_file.archive.output_base64sha256
 
-  handler      = "index.handler"
-  runtime      = "nodejs12.x"
-  timeout      = 300
-  memory_size  = 128
-  publish      = true
+  handler     = "index.handler"
+  runtime     = "nodejs12.x"
+  timeout     = 300
+  memory_size = 128
+  publish     = true
 }
 
 resource "aws_iam_role" "lambda" {
