@@ -7,7 +7,7 @@ data "archive_file" "archive" {
 resource "aws_lambda_function" "lambda" {
   count = var.enable_lambda_edge_function ? 1 : 0
 
-  function_name = replace(var.domain_name, ".", "-")
+  function_name = "${replace(var.domain_name, ".", "-")}-lambda-edge"
 
   filename         = data.archive_file.archive.output_path
   role             = aws_iam_role.lambda[count.index].arn
