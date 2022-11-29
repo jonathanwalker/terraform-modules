@@ -1,11 +1,11 @@
 variable "policy_name" {
   type        = string
-  description = "The name of the role to create"
+  description = "The name of the policy to create"
 }
 
-variable "policy_arns" {
-  type        = list(string)
-  description = "A list of policy ARNs to attach to the role"
+variable "policy_description" {
+  type        = string
+  description = "The description of the policy to create"
 }
 
 variable "bucket_name" {
