@@ -5,6 +5,7 @@ data "archive_file" "archive" {
 }
 
 resource "aws_lambda_function" "lambda" {
+  # conditional resource based on variable is true or false
   count = var.enable_lambda_edge_function ? 1 : 0
 
   function_name = "${replace(var.domain_name, ".", "-")}-lambda-edge"
@@ -32,18 +33,12 @@ resource "aws_iam_role" "lambda" {
   tags = var.tags
 }
 
-data "aws_iam_policy_document" "lambda_policy" {
-  statement {
-    actions = [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
+resource "aws_iam_role_policy_attachment" "lambda" {
+  # conditional resource based on variable is true or false
+  count = var.enable_lambda_edge_function ? 1 : 0
 
-    resources = [
-      "arn:aws:logs:*:*:*",
-    ]
-  }
+  role       = aws_iam_role.lambda[count.index].name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 data "aws_iam_policy_document" "lambda_assume_role_policy" {
