@@ -3,7 +3,7 @@ resource "aws_cloudfront_origin_access_identity" "oai" {
 }
 
 resource "aws_cloudfront_distribution" "distribution" {
-  depends_on = [aws_cloudfront_distribution.oia]
+  depends_on = [aws_cloudfront_origin_access_identity.oia]
 
   aliases         = [var.domain_name]
   comment         = "Distribution for ${var.domain_name}"
@@ -74,16 +74,24 @@ resource "aws_acm_certificate" "certificate" {
   tags = var.tags
 }
 
-resource "aws_acm_certificate_validation" "certificate_validation" {
-  depends_on              = [aws_route53_record.certificate_validation]
-  certificate_arn         = aws_acm_certificate.certificate.arn
-  validation_record_fqdns = aws_acm_certificate.certificate.domain_validation_options.*.resource_record_name
+resource "aws_route53_record" "record_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.certificate.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = var.zone_id
 }
 
-resource "aws_route53_record" "certificate_validation" {
-  name    = aws_acm_certificate.certificate.domain_validation_options.0.resource_record_name
-  type    = aws_acm_certificate.certificate.domain_validation_options.0.resource_record_type
-  zone_id = var.zone_id
-  records = [aws_acm_certificate.certificate.domain_validation_options.0.resource_record_value]
-  ttl     = 60
+resource "aws_acm_certificate_validation" "example" {
+  certificate_arn         = aws_acm_certificate.certificate.arn
+  validation_record_fqdns = [for record in aws_route53_record.record_validation : record.fqdn]
 }
