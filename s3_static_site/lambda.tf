@@ -15,7 +15,7 @@ resource "aws_lambda_function" "lambda" {
 
   handler     = "index.handler"
   runtime     = "nodejs12.x"
-  timeout     = 300
+  timeout     = 10
   memory_size = 128
   publish     = true
 }
