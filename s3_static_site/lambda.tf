@@ -10,7 +10,7 @@ resource "aws_lambda_function" "lambda" {
   function_name = replace(var.domain_name, ".", "-")
 
   filename         = data.archive_file.archive.output_path
-  role             = aws_iam_role.lambda[0].arn
+  role             = aws_iam_role.lambda[count.index].arn
   source_code_hash = data.archive_file.archive.output_base64sha256
 
   handler      = "index.handler"
