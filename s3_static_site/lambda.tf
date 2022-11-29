@@ -15,7 +15,6 @@ resource "aws_lambda_function" "lambda" {
 
   handler      = "index.handler"
   runtime      = "nodejs12.x"
-  architecture = "x86_64"
   timeout      = 300
   memory_size  = 128
   publish      = true
