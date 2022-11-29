@@ -27,7 +27,7 @@ resource "aws_cloudfront_distribution" "distribution" {
     target_origin_id = aws_s3_bucket.s3_bucket.bucket_regional_domain_name
 
     dynamic "lambda_function_association" {
-      count = var.enable_lambda_edge_function ? 1 : 0
+      for_each = var.enable_lambda_edge_function ? [1] : []
 
       content {
         event_type   = "origin-request"
