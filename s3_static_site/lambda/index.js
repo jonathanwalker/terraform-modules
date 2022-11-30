@@ -1,6 +1,6 @@
 'use strict';
 
-exports.handler =  async function(event) {
+exports.handler = async function(event) {
   var request = event.request;
   var uri = request.uri;
   
