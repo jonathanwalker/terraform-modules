@@ -1,11 +1,9 @@
 'use strict';
 
 exports.handler = async function(event) {
-  var request = event.request;
+  var request = event.Records[0].cf.request;
   var uri = request.uri;
-  
-  console.log(event)
-  
+    
   // Check whether the URI is missing a file name.
   if (uri.endsWith('/')) {
       request.uri += 'index.html';
