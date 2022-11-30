@@ -1,6 +1,6 @@
-// Lambda function to redirect index.html to root
-// https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/url-rewrite-single-page-apps
-function handler(event) {
+'use strict';
+
+exports.handler = (event, context, callback) => {
   var request = event.request;
   var uri = request.uri;
 
