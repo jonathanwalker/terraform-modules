@@ -93,7 +93,6 @@ resource "aws_cloudfront_response_headers_policy" "headers" {
   security_headers_config {
     strict_transport_security {
       include_subdomains = true
-      include_subdomains = true
       preload            = true
       enable             = true
 
