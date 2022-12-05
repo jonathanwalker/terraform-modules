@@ -1,4 +1,4 @@
-# S3 Bucket for storing state files
+#tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
 resource "aws_s3_bucket" "s3_bucket" {
     bucket = var.bucket_name
     lifecycle {
@@ -41,6 +41,17 @@ resource "aws_dynamodb_table" "dynamodb_table" {
     hash_key       = "LockID"
     read_capacity  = 0
     write_capacity = 0
+
+    # kms encryption
+    server_side_encryption {
+        enabled     = true
+        kms_key_arn = aws_kms_key.kms_key.arn
+    }
+
+    # You never know
+    point_in_time_recovery {
+        enabled = true
+    }
 
     attribute {
         name = "LockID"

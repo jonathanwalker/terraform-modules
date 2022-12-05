@@ -2,6 +2,7 @@ resource "aws_cloudfront_origin_access_identity" "oai" {
   comment = "OAI for ${var.domain_name}"
 }
 
+#tfsec:ignore:aws-cloudfront-enable-waf tfsec:ignore:aws-cloudfront-enable-logging
 resource "aws_cloudfront_distribution" "distribution" {
   depends_on = [aws_cloudfront_origin_access_identity.oai]
 
@@ -60,7 +61,7 @@ resource "aws_cloudfront_distribution" "distribution" {
   viewer_certificate {
     acm_certificate_arn      = aws_acm_certificate.certificate.arn
     ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2019"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 
   tags = var.tags
