@@ -67,6 +67,42 @@ resource "aws_cloudfront_distribution" "distribution" {
   tags = var.tags
 }
 
+# cloudfront security headers
+resource "aws_cloudfront_response_headers_policy" "headers" {
+  name    = "headers"
+  comment = "Headers for ${var.domain_name}"
+
+  response_headers {
+    header_name  = "Strict-Transport-Security"
+    header_value = "max-age=31536000"
+  }
+
+  headers {
+    name  = "Content-Security-Policy"
+    value = "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; object-src 'none'; frame-ancestors 'none'"
+  }
+
+  response_headers {
+    header_name  = "X-Content-Type-Options"
+    header_value = "nosniff"
+  }
+
+  response_headers {
+    header_name  = "X-Frame-Options"
+    header_value = "DENY"
+  }
+
+  response_headers {
+    header_name  = "X-XSS-Protection"
+    header_value = "1; mode=block"
+  }
+
+  response_headers {
+    header_name  = "Referrer-Policy"
+    header_value = "same-origin"
+  }
+}
+
 resource "aws_route53_record" "record" {
   zone_id = var.zone_id
   name    = var.domain_name
