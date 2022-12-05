@@ -118,13 +118,10 @@ resource "aws_cloudfront_response_headers_policy" "headers" {
       override = true
       referrer_policy = "same-origin"
     }
-  }
-  
-  custom_headers_config {
-    items {
-      header   = "X-Frame-Options"
+
+    frame_options {
       override = true
-      value  = "DENY"
+      frame_options = "DENY"
     }
   }
 }
