@@ -118,8 +118,6 @@ resource "aws_cloudfront_response_headers_policy" "headers" {
       override = true
       referrer_policy = "same-origin"
     }
-
-    origin_override = true
   }
   
   custom_headers_config {
