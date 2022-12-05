@@ -87,38 +87,43 @@ resource "aws_cloudfront_response_headers_policy" "headers" {
       items = ["devsecopsdocs.com"]
     }
 
+    strict_transport_security {
+      max_age_seconds           = 31536000
+      include_subdomains        = true
+      preload                   = true
+      enable                    = true
+    }
+    
+    xss_protection {
+      enable = true
+      items = ["1", "mode=block"]
+    }
+
+    referrer_policy {
+      enable = true
+      items = ["strict-origin-when-cross-origin"]
+    }
+
+    content_security_policy {
+      disable_default_security_header = true
+      policy = <<EOF
+default-src 'self';
+script-src 'self';
+style-src 'self';
+img-src 'self' imgs.xkcd.com;
+font-src 'self';
+connect-src 'self';
+EOF
+    }
+
     origin_override = true
   }
   
   custom_headers_config {
     items {
-      header   = "Content-Security-Policy"
-      override = true
-      value    = "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; object-src 'none'; frame-ancestors 'none'"
-    }
-
-    items {
-      header   = "Strict-Transport-Security"
-      override = true
-      value    = "max-age=31536000"
-    }
-
-    items {
       header   = "X-Frame-Options"
       override = true
       value  = "DENY"
-    }
-
-    items {
-      header   = "X-XSS-Protection"
-      override = true
-      value    = "1; mode=block"
-    }
-
-    items {
-      header   = "Referrer-Policy"
-      override = true
-      value    = "same-origin"
     }
   }
 }
