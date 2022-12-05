@@ -92,33 +92,34 @@ resource "aws_cloudfront_response_headers_policy" "headers" {
 
   security_headers_config {
     strict_transport_security {
-      max_age_seconds           = 31536000
-      include_subdomains        = true
-      preload                   = true
-      enable                    = true
+      include_subdomains = true
+      include_subdomains = true
+      preload            = true
+      enable             = true
+
+      max_age            = 31536000
     }
-    
+
+    content_security_policy {
+      enable = true
+      policy = "default-src 'self'; img-src 'self' imgs.xkcd.com data:; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self';"
+    }
+
     xss_protection {
       enable = true
-      items = ["1", "mode=block"]
+      policy = "1; mode=block"
+    }
+
+    content_type_options {
+      enable = true
     }
 
     referrer_policy {
       enable = true
-      items = ["strict-origin-when-cross-origin"]
+      policy = "same-origin"
     }
 
-    content_security_policy {
-      disable_default_security_header = true
-      policy = <<EOF
-default-src 'self';
-script-src 'self';
-style-src 'self';
-img-src 'self' imgs.xkcd.com;
-font-src 'self';
-connect-src 'self';
-EOF
-    }
+    origin_override = true
   }
   
   custom_headers_config {
