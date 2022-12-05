@@ -75,10 +75,6 @@ resource "aws_cloudfront_response_headers_policy" "headers" {
   cors_config {
     access_control_allow_credentials = false
 
-    access_control_allow_headers {
-      items = []
-    }
-
     access_control_allow_methods {
       items = ["GET"]
     }
