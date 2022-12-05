@@ -104,12 +104,6 @@ resource "aws_cloudfront_response_headers_policy" "headers" {
     }
 
     items {
-      header   = "X-Content-Type-Options"
-      override = true
-      value    = "nosniff"
-    }
-
-    items {
       header   = "X-Frame-Options"
       override = true
       value  = "DENY"
