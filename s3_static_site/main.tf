@@ -26,8 +26,8 @@ resource "aws_cloudfront_distribution" "distribution" {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
     target_origin_id = aws_s3_bucket.s3_bucket.bucket_regional_domain_name
-    
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.security_headers.id
+
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.headers.id
 
     dynamic "lambda_function_association" {
       for_each = var.enable_lambda_edge_function ? [1] : []
