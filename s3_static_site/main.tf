@@ -68,38 +68,47 @@ resource "aws_cloudfront_distribution" "distribution" {
 }
 
 # cloudfront security headers
-resource "aws_cloudfront_response_headers_policy" "headers" {
+resource "aws_cloudfront_items_policy" "headers" {
   name    = "headers"
   comment = "Headers for ${var.domain_name}"
 
-  response_headers {
-    header_name  = "Strict-Transport-Security"
-    header_value = "max-age=31536000"
-  }
+  
+  custom_headers_config {
+    items {
+      header   = "Content-Security-Policy"
+      override = true
+      value    = "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; object-src 'none'; frame-ancestors 'none'"
+    }
 
-  headers {
-    name  = "Content-Security-Policy"
-    value = "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; object-src 'none'; frame-ancestors 'none'"
-  }
+    items {
+      header   = "Strict-Transport-Security"
+      override = true
+      value    = "max-age=31536000"
+    }
 
-  response_headers {
-    header_name  = "X-Content-Type-Options"
-    header_value = "nosniff"
-  }
+    items {
+      header   = "X-Content-Type-Options"
+      override = true
+      value    = "nosniff"
+    }
 
-  response_headers {
-    header_name  = "X-Frame-Options"
-    header_value = "DENY"
-  }
+    items {
+      header   = "X-Frame-Options"
+      override = true
+      value  = "DENY"
+    }
 
-  response_headers {
-    header_name  = "X-XSS-Protection"
-    header_value = "1; mode=block"
-  }
+    items {
+      header   = "X-XSS-Protection"
+      override = true
+      value    = "1; mode=block"
+    }
 
-  response_headers {
-    header_name  = "Referrer-Policy"
-    header_value = "same-origin"
+    items {
+      header   = "Referrer-Policy"
+      override = true
+      value    = "same-origin"
+    }
   }
 }
 
