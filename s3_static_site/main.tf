@@ -68,10 +68,27 @@ resource "aws_cloudfront_distribution" "distribution" {
 }
 
 # cloudfront security headers
-resource "aws_cloudfront_items_policy" "headers" {
+resource "aws_cloudfront_response_headers_policy" "headers" {
   name    = "headers"
   comment = "Headers for ${var.domain_name}"
 
+  cors_config {
+    access_control_allow_credentials = false
+
+    access_control_allow_headers {
+      items = []
+    }
+
+    access_control_allow_methods {
+      items = ["GET"]
+    }
+
+    access_control_allow_origins {
+      items = ["devsecopsdocs.com"]
+    }
+
+    origin_override = true
+  }
   
   custom_headers_config {
     items {
