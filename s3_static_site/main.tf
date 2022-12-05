@@ -121,7 +121,7 @@ resource "aws_cloudfront_response_headers_policy" "headers" {
 
     frame_options {
       override = true
-      frame_options = "DENY"
+      frame_option = "DENY"
     }
   }
 }
