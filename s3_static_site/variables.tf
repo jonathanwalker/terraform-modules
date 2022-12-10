@@ -18,6 +18,11 @@ variable "bucket_name" {
   default = "example.com"
 }
 
+variable "content_security_policy" {
+  type    = string
+  default = "default-src 'self'; img-src 'self' imgs.xkcd.com data:; script-src 'self'; style-src 'self' https://plausible.io; font-src 'self'; connect-src 'self';"
+}
+
 variable "enable_lambda_edge_function" {
   type    = bool
   default = false
