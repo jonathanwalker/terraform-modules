@@ -103,7 +103,7 @@ resource "aws_cloudfront_response_headers_policy" "headers" {
 
     content_security_policy {
       override = true
-      content_security_policy = "default-src 'self'; img-src 'self' imgs.xkcd.com data:; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self';"
+      content_security_policy = var.content_security_policy
     }
 
     xss_protection {
