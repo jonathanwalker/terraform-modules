@@ -18,6 +18,11 @@ variable "bucket_name" {
   default = "example.com"
 }
 
+variable "error_page" {
+  type    = string
+  default = "error.html"
+}
+
 variable "enable_lambda_edge_function" {
   type    = bool
   default = false
