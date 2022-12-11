@@ -11,7 +11,7 @@ resource "aws_cloudfront_distribution" "distribution" {
   enabled         = true
   is_ipv6_enabled = true
 
-  default_root_object        = var.default_root_object
+  default_root_object = var.default_root_object
 
   origin {
     domain_name = aws_s3_bucket.s3_bucket.bucket_regional_domain_name
