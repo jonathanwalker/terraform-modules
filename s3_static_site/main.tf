@@ -93,7 +93,7 @@ resource "aws_cloudfront_response_headers_policy" "headers" {
   }
 
   dynamic "security_headers_config" {
-    for_each = var.enable_security_headers ? [1] : []
+    for_each = var.enable_security_headers ? 1 : 0
 
     strict_transport_security {
       include_subdomains = true
