@@ -22,6 +22,74 @@ resource "aws_cloudfront_distribution" "distribution" {
     }
   }
 
+  ###
+  # Plausible Analytics https://plausible.io/docs/proxy/guides/cloudfront
+  ### 
+  dynamic "origin" {
+    for_each = var.enable_plausible_analytics ? [1] : []
+    content {
+      domain_name = "plausible.io"
+      origin_id   = "plausible.io"
+
+      custom_origin_config {
+        http_port                = 80
+        https_port               = 443
+        origin_protocol_policy   = "https-only"
+        origin_ssl_protocols     = ["TLSv1.2"]
+        origin_keepalive_timeout = 5
+        origin_read_timeout      = 30
+      }
+    }
+  }
+
+  dynamic "ordered_cache_behavior" {
+    for_each = var.enable_plausible_analytics ? [1] : []
+    content {
+      path_pattern     = "/js/script.js"
+      target_origin_id = "plausible.io"
+
+      allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+      cached_methods   = ["GET", "HEAD", "OPTIONS"]
+
+      forwarded_values {
+        query_string = false
+
+        cookies {
+          forward = "none"
+        }
+      }
+
+      viewer_protocol_policy = "redirect-to-https"
+      min_ttl                = 0
+      default_ttl            = 3600
+      max_ttl                = 86400
+    }
+  }
+
+  dynamic "ordered_cache_behavior" {
+    for_each = var.enable_plausible_analytics ? [1] : []
+    content {
+      path_pattern     = "/api/event"
+      target_origin_id = "plausible.io"
+
+      allowed_methods  = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+      cached_methods   = ["GET", "HEAD", "OPTIONS"]
+
+      forwarded_values {
+        query_string = true
+
+        cookies {
+          forward = "none"
+        }
+      }
+
+      viewer_protocol_policy = "redirect-to-https"
+      min_ttl                = 0
+      default_ttl            = 3600
+      max_ttl                = 86400
+    }
+  }
+
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]

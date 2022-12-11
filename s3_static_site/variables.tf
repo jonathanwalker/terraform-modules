@@ -23,6 +23,11 @@ variable "enable_lambda_edge_function" {
   default = false
 }
 
+variable "enable_plausible_analytics" {
+  type    = bool
+  default = false
+}
+
 variable "content_security_policy" {
   type    = string
   default = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self';"
