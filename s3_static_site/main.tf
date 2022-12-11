@@ -98,16 +98,16 @@ resource "aws_cloudfront_response_headers_policy" "headers" {
       preload            = true
       override           = true
 
-      access_control_max_age_sec = 31536000
+      access_control_max_age_sec = var.access_control_max_age_sec
     }
 
     content_security_policy {
-      override = true
+      override                = true
       content_security_policy = var.content_security_policy
     }
 
     xss_protection {
-      override = true
+      override   = true
       mode_block = true
       protection = true
     }
@@ -117,12 +117,12 @@ resource "aws_cloudfront_response_headers_policy" "headers" {
     }
 
     referrer_policy {
-      override = true
+      override        = true
       referrer_policy = "same-origin"
     }
 
     frame_options {
-      override = true
+      override     = true
       frame_option = "DENY"
     }
   }
