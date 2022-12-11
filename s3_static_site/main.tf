@@ -39,20 +39,6 @@ resource "aws_cloudfront_distribution" "distribution" {
       }
     }
 
-    custom_error_response {
-      error_caching_min_ttl = 0
-      error_code            = 404
-      response_code         = 200
-      response_page_path    = "/404.html"
-    }
-
-    custom_error_response {
-      error_caching_min_ttl = 0
-      error_code            = 403
-      response_code         = 200
-      response_page_path    = "/404.html"
-    }
-
     forwarded_values {
       query_string = false
 
@@ -78,6 +64,20 @@ resource "aws_cloudfront_distribution" "distribution" {
     acm_certificate_arn      = aws_acm_certificate.certificate.arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
+  }
+
+  custom_error_response {
+    error_caching_min_ttl = 0
+    error_code            = 404
+    response_code         = 200
+    response_page_path    = "/404.html"
+  }
+
+  custom_error_response {
+    error_caching_min_ttl = 0
+    error_code            = 403
+    response_code         = 200
+    response_page_path    = "/404.html"
   }
 
   tags = var.tags
