@@ -49,7 +49,8 @@ No modules.
 | <a name="input_default_root_object"></a> [default\_root\_object](#input\_default\_root\_object) | n/a | `string` | `"index.html"` | no |
 | <a name="input_domain_name"></a> [domain\_name](#input\_domain\_name) | n/a | `string` | `"example.com"` | no |
 | <a name="input_enable_lambda_edge_function"></a> [enable\_lambda\_edge\_function](#input\_enable\_lambda\_edge\_function) | n/a | `bool` | `false` | no |
-| <a name="input_enable_security_headers"></a> [enable\_security\_headers](#input\_enable\_security\_headers) | n/a | `bool` | `true` | no |
+| <a name="input_enable_plausible_analytics"></a> [enable\_plausible\_analytics](#input\_enable\_plausible\_analytics) | n/a | `bool` | `false` | no |
+| <a name="input_error_page"></a> [error\_page](#input\_error\_page) | n/a | `string` | `"/error.html"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | n/a | `map(string)` | <pre>{<br>  "Name": "example.com",<br>  "Owner": "johnny"<br>}</pre> | no |
 | <a name="input_zone_id"></a> [zone\_id](#input\_zone\_id) | n/a | `string` | `"Z1234567890"` | no |
 
