@@ -23,11 +23,6 @@ variable "enable_lambda_edge_function" {
   default = false
 }
 
-variable "enable_security_headers" {
-  type    = bool
-  default = true
-}
-
 variable "content_security_policy" {
   type    = string
   default = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self';"
