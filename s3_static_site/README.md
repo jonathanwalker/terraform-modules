@@ -43,11 +43,13 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_access_control_max_age_sec"></a> [access\_control\_max\_age\_sec](#input\_access\_control\_max\_age\_sec) | n/a | `number` | `31536000` | no |
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | n/a | `string` | `"example.com"` | no |
-| <a name="input_content_security_policy"></a> [content\_security\_policy](#input\_content\_security\_policy) | n/a | `string` | `"default-src 'self'; img-src 'self' imgs.xkcd.com data:; script-src 'self'; style-src 'self' https://plausible.io; font-src 'self'; connect-src 'self';"` | no |
+| <a name="input_content_security_policy"></a> [content\_security\_policy](#input\_content\_security\_policy) | n/a | `string` | `"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self';"` | no |
 | <a name="input_default_root_object"></a> [default\_root\_object](#input\_default\_root\_object) | n/a | `string` | `"index.html"` | no |
 | <a name="input_domain_name"></a> [domain\_name](#input\_domain\_name) | n/a | `string` | `"example.com"` | no |
 | <a name="input_enable_lambda_edge_function"></a> [enable\_lambda\_edge\_function](#input\_enable\_lambda\_edge\_function) | n/a | `bool` | `false` | no |
+| <a name="input_enable_security_headers"></a> [enable\_security\_headers](#input\_enable\_security\_headers) | n/a | `bool` | `true` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | n/a | `map(string)` | <pre>{<br>  "Name": "example.com",<br>  "Owner": "johnny"<br>}</pre> | no |
 | <a name="input_zone_id"></a> [zone\_id](#input\_zone\_id) | n/a | `string` | `"Z1234567890"` | no |
 
