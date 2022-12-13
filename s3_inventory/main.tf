@@ -25,6 +25,7 @@ resource "aws_s3_bucket_inventory" "inventory" {
 ###
 # Inventory Bucket
 ###
+# tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
 resource "aws_s3_bucket" "inventory_bucket" {
   bucket = var.report_bucket
   tags   = var.tags
