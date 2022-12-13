@@ -15,8 +15,8 @@ resource "aws_s3_bucket_inventory" "inventory" {
   }
 
   destination {
-    s3_bucket_destination {
-      bucket = aws_s3_bucket.inventory_bucket.arn
+    bucket {
+      bucket_arn = aws_s3_bucket.inventory_bucket.arn
       format = each.value["format"]
     }
   }
@@ -35,7 +35,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "inventory_bucket" {
 
   rule {
     id      = "inventory-expiration"
-    enabled = true
+    status  = "Enabled"
 
     expiration {
       days = var.inventory_expiration_days

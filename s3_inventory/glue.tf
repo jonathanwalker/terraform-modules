@@ -1,8 +1,6 @@
 resource "aws_glue_catalog_database" "database" {
   name        = "s3_inventory"
   description = "Database for storing S3 inventory reports"
-
-  tags = var.tags
 }
 
 resource "aws_glue_catalog_table" "table" {
