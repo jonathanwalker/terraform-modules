@@ -3,7 +3,7 @@ variable "report_bucket" {
 }
 
 variable "s3_inventory_configuration" {
-  type = list(object({
+  type = map(object({
     bucket                   = string
     included_object_versions = string
     optional_fields          = list(string)

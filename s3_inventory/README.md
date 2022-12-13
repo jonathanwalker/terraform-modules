@@ -36,7 +36,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_inventory_expiration_days"></a> [inventory\_expiration\_days](#input\_inventory\_expiration\_days) | n/a | `number` | `30` | no |
 | <a name="input_report_bucket"></a> [report\_bucket](#input\_report\_bucket) | n/a | `string` | n/a | yes |
-| <a name="input_s3_inventory_configuration"></a> [s3\_inventory\_configuration](#input\_s3\_inventory\_configuration) | n/a | <pre>list(object({<br>    bucket                   = string<br>    included_object_versions = string<br>    optional_fields          = list(string)<br>    frequency                = string<br>    destination_bucket       = string<br>    format                   = string<br>    prefix                   = string<br>  }))</pre> | n/a | yes |
+| <a name="input_s3_inventory_configuration"></a> [s3\_inventory\_configuration](#input\_s3\_inventory\_configuration) | n/a | <pre>map(object({<br>    bucket                   = string<br>    included_object_versions = string<br>    optional_fields          = list(string)<br>    frequency                = string<br>    format                   = string<br>  }))</pre> | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | n/a | `map(string)` | n/a | yes |
 
 ## Outputs
