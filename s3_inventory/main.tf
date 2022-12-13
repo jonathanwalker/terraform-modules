@@ -71,7 +71,7 @@ resource "aws_s3_bucket_policy" "inventory_bucket_policy" {
 
 data "aws_iam_policy_document" "inventory_bucket_policy" {
   statement {
-    sid    = "AllowInventoryBucket"
+    sid    = "AllowInventoryReports"
     effect = "Allow"
 
     principals {
@@ -84,7 +84,7 @@ data "aws_iam_policy_document" "inventory_bucket_policy" {
     ]
 
     resources = [
-      aws_s3_bucket.inventory_bucket.arn,
+      "${aws_s3_bucket.inventory_bucket.arn}/*",
     ]
 
     condition {
