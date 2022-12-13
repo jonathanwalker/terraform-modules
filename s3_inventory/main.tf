@@ -18,7 +18,6 @@ resource "aws_s3_bucket_inventory" "inventory" {
     s3_bucket_destination {
       bucket = aws_s3_bucket.inventory_bucket.arn
       format = each.value["format"]
-      prefix = each.value["prefix"]
     }
   }
 }

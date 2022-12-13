@@ -1,6 +1,5 @@
 resource "aws_glue_catalog_database" "database" {
-  name = "s3_inventory"
-
+  name        = "s3_inventory"
   description = "Database for storing S3 inventory reports"
 
   tags = var.tags
@@ -9,9 +8,9 @@ resource "aws_glue_catalog_database" "database" {
 resource "aws_glue_catalog_table" "table" {
   for_each = var.s3_inventory_configuration
 
-  name          = replace(each.value["bucket"], "-", "_")
+  name = replace(each.value["bucket"], "-", "_")
   database_name = aws_glue_catalog_database.database.name
-  table_type    = "EXTERNAL_TABLE"
+  table_type = "EXTERNAL_TABLE"
 
   storage_descriptor {
     location = "s3://${aws_s3_bucket.inventory_bucket.id}/${each.value["bucket"]}/${each.value["bucket"]}/hive"
@@ -102,12 +101,12 @@ resource "aws_glue_catalog_table" "table" {
 
   # Projection configuration
   parameters = {
-    "EXTERNAL"               = "TRUE"
-    "projection.enabled"     = "true"
-    "projection.dt.type"     = "date"
-    "projection.dt.format"   = "yyyy-MM-dd-HH-mm"
-    "projection.dt.interval" = "1"
-    "projection.dt.range"    = "2022-01-01-00-00,NOW"
+    "EXTERNAL"                = "TRUE"
+    "projection.enabled"      = "true"
+    "projection.dt.type"      = "date"
+    "projection.dt.format"    = "yyyy-MM-dd-HH-mm"
+    "projection.dt.interval"  = "1"
+    "projection.dt.range"     = "2022-01-01-00-00,NOW"
 
     "projection.dt.interval.unit" = "DAYS"
   }

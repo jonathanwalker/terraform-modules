@@ -8,9 +8,7 @@ variable "s3_inventory_configuration" {
     included_object_versions = string
     optional_fields          = list(string)
     frequency                = string
-    destination_bucket       = string
     format                   = string
-    prefix                   = string
   }))
 }
 
