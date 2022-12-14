@@ -1,6 +1,6 @@
 # s3_bucket_notification to lambda function
 resource "aws_s3_bucket_notification" "s3_bucket_notification" {
-  bucket = aws_s3_bucket.s3_bucket.id
+  bucket = var.bucket_name
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.function.arn
