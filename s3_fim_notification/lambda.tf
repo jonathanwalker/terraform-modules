@@ -1,6 +1,5 @@
 # lambda function golang
 resource "aws_lambda_function" "function" {
-  depends_on = [archive_file.zip]
   filename      = "lambda.zip"
   function_name = "lambda_function"
 
@@ -12,7 +11,7 @@ resource "aws_lambda_function" "function" {
   timeout     = 300
   memory_size = 128
 
-  source_code_hash = filebase64sha256("lambda.zip")
+  source_code_hash = data.archive_file.zip.output_base64sha256
 
   tags = var.tags
 }
