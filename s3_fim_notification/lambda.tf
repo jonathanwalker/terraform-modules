@@ -1,5 +1,6 @@
 # lambda function golang
 resource "aws_lambda_function" "function" {
+  depends_on = [archive_file.zip]
   filename      = "lambda.zip"
   function_name = "lambda_function"
 
@@ -16,7 +17,7 @@ resource "aws_lambda_function" "function" {
   tags = var.tags
 }
 
-data "archive_file" "lambda_zip" {
+data "archive_file" "zip" {
   type        = "zip"
   source_dir  = "src/"
   output_path = "lambda.zip"
