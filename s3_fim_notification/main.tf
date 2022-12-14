@@ -1,5 +1,5 @@
 # s3_bucket_notification to lambda function
-resource "aws_s3_bucket_notification" "s3_bucket_notification" {
+resource "aws_s3_bucket_notification" "notification" {
   depends_on = [aws_lambda_function.function]
 
   bucket = var.bucket_name
@@ -38,13 +38,13 @@ data "aws_iam_policy_document" "queue_policy" {
     condition {
       test     = "ArnEquals"
       variable = "aws:SourceArn"
-      values = [aws_s3_bucket_notification.s3_bucket_notification.arn]
+      values   = ["arn:aws:s3:::${var.bucket_name}"]
     }
   }
 }
 
 # sqs queue to trigger lambda function
-resource "aws_lambda_event_source_mapping" "event_source_mapping" {
+resource "aws_lambda_event_source_mapping" "mapping" {
   depends_on = [aws_sqs_queue_policy.queue_policy]
 
   event_source_arn = aws_sqs_queue.queue.arn
