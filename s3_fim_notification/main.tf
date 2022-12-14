@@ -9,7 +9,7 @@ resource "aws_s3_bucket_notification" "s3_bucket_notification" {
     events    = var.s3_events
 
     filter_prefix = var.filter_prefix
-    filter_suffix = var.suffix_filter
+    filter_suffix = var.filter_suffix
   }
 }
 
