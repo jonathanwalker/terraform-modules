@@ -1,10 +1,9 @@
 # lambda function golang
 resource "aws_lambda_function" "function" {
   filename      = "lambda.zip"
-  function_name = "lambda_function"
+  function_name = "${var.bucket_name}-fim"
 
   role           = aws_iam_role.lambda_role.arn
-  log_group_name = aws_cloudwatch_log_group.log_group.name
 
   handler     = "Handler"
   runtime     = "go1.x"
@@ -23,7 +22,7 @@ data "archive_file" "zip" {
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {
-  name = "lambda_log_group"
+  name = "${var.bucket_name}-fim"
 
   retention_in_days = var.log_retention_days
 
