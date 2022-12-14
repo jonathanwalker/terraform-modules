@@ -36,24 +36,22 @@ resource "aws_cloudwatch_log_group" "log_group" {
 resource "aws_iam_role" "lambda_role" {
   name = "lambda_role"
 
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.policy.json
 
   tags = var.tags
 }
 
-data "aws_iam_policy_document" "lambda" {
-  statement = {
-    actions = [
-      "sts:AssumeRole",
-    ]
+data "aws_iam_policy_document" "policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
     principals {
-      type = "Service"
-      identifiers = [
-        "lambda.amazonaws.com",
-      ]
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
     }
   }
 }
+
 resource "aws_iam_role_policy_attachment" "policy_attachment" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
