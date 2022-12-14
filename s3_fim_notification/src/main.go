@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/aws/aws-lambda-go/lambda"
@@ -42,8 +43,14 @@ func Handler(event interface{}) (string, error) {
 		objects_changed = append(objects_changed, object_event)
 	}
 
-	// Print objects_changed as json
-	fmt.Printf("%+v\n", objects_changed)
+	// Convert to json
+	e, err := json.Marshal(objects_changed)
+	if err != nil {
+		panic(err)
+	}
+
+	// Print the JSON-formatted string.
+	fmt.Println(string(e))
 
 	return "OK", nil
 }
