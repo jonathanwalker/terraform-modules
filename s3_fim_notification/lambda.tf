@@ -41,12 +41,12 @@ resource "aws_iam_role" "lambda_role" {
   tags = var.tags
 }
 
-data "aws_iam_policy_document" "assume_role" {
+data "aws_iam_policy_document" "lambda" {
   statement = {
     actions = [
       "sts:AssumeRole",
     ]
-    principals = {
+    principals {
       type = "Service"
       identifiers = [
         "lambda.amazonaws.com",
@@ -54,7 +54,6 @@ data "aws_iam_policy_document" "assume_role" {
     }
   }
 }
-
 resource "aws_iam_role_policy_attachment" "policy_attachment" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
