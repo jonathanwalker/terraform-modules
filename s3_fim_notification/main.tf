@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "queue_policy" {
       identifiers = ["s3.amazonaws.com"]
     }
     actions = ["SQS:SendMessage"]
-    resources = [aws_sqs_queue.sqs_queue.arn]
+    resources = [aws_sqs_queue.queue.arn]
     condition {
       test     = "ArnEquals"
       variable = "aws:SourceArn"
