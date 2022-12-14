@@ -11,7 +11,7 @@ variable "batch_size" {
 variable "batch_window" {
   type = number
   default = 10
-  description = "The number of seconds to wait for lambda function"
+  description = "The number of seconds to wait before the lambda function executes"
 }
 
 variable "filter_prefix" {
