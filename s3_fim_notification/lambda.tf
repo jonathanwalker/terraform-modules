@@ -12,6 +12,8 @@ resource "aws_lambda_function" "function" {
   memory_size = 128
 
   source_code_hash = filebase64sha256("lambda.zip")
+
+  tags = var.tags
 }
 
 data "archive_file" "lambda_zip" {
@@ -24,6 +26,8 @@ resource "aws_cloudwatch_log_group" "log_group" {
   name = "lambda_log_group"
 
   retention_in_days = var.log_retention_days
+
+  tags = var.tags
 }
 
 ###
@@ -33,6 +37,8 @@ resource "aws_iam_role" "lambda_role" {
   name = "lambda_role"
 
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
+
+  tags = var.tags
 }
 
 data "aws_iam_policy_document" "assume_role" {
