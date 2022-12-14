@@ -2,6 +2,12 @@ variable "bucket_name" {
   type = string
 }
 
+variable "batch_size" {
+  type = number
+  default = 100
+  description = "The number of files to process in each batch to reduce alerts"
+}
+
 variable "filter_prefix" {
   type = string
   default = ""
