@@ -36,12 +36,12 @@ resource "aws_cloudwatch_log_group" "log_group" {
 resource "aws_iam_role" "lambda_role" {
   name = "lambda_role"
 
-  assume_role_policy = data.aws_iam_policy_document.policy.json
+  assume_role_policy = data.aws_iam_policy_document.trust.json
 
   tags = var.tags
 }
 
-data "aws_iam_policy_document" "policy" {
+data "aws_iam_policy_document" "trust" {
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -52,7 +52,31 @@ data "aws_iam_policy_document" "policy" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "policy_attachment" {
+# attach policy to role
+resource "aws_iam_role_policy_attachment" "policy" {
   role       = aws_iam_role.lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  policy_arn = aws_iam_policy.policy.arn
+}
+
+# IAM policy for lambda
+resource "aws_iam_policy" "policy" {
+  name        = "${var.bucket_name}-fim-policy"
+  description = "Policy for lambda"
+
+  policy = data.aws_iam_policy_document.policy.json
+}
+
+data "aws_iam_policy_document" "policy" {
+  statement {
+    sid     = "AllowSQSReceive"
+    actions = ["sqs:ReceiveMessage"]
+
+    resources = [aws_sqs_queue.queue.arn]
+  }
+  statement {
+    sid     = "AllowCloudWatchLogs"
+    actions = ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"]
+
+    resources = [aws_cloudwatch_log_group.log_group.arn]
+  }
 }
