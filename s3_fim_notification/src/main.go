@@ -42,8 +42,8 @@ func Handler(event interface{}) (string, error) {
 		objects_changed = append(objects_changed, object_event)
 	}
 
-	// Print objects_changed list as json
-	fmt.Println(objects_changed)
+	// Print objects_changed as json
+	fmt.Printf("%+v\n", objects_changed)
 
 	return "OK", nil
 }
