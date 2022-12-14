@@ -18,7 +18,7 @@ resource "aws_lambda_function" "function" {
 data "archive_file" "zip" {
   depends_on  = [null_resource.build]
   type        = "zip"
-  source_dir  = "src/bin/"
+  source_file = "src/main"
   output_path = "lambda.zip"
 }
 
