@@ -12,7 +12,7 @@ resource "aws_s3_bucket_notification" "s3_bucket_notification" {
   }
 }
 
-resource "null_resource" "build_go_lambda" {
+resource "null_resource" "build" {
   provisioner "local-exec" {
     command = "cd ${path.module}/src && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o main"
   }
