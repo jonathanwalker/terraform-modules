@@ -5,7 +5,7 @@ resource "aws_lambda_function" "function" {
 
   role           = aws_iam_role.lambda_role.arn
 
-  handler     = "Handler"
+  handler     = "main"
   runtime     = "go1.x"
   timeout     = 300
   memory_size = 128
