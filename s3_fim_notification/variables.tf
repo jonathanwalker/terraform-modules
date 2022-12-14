@@ -8,6 +8,12 @@ variable "batch_size" {
   description = "The number of files to process in each batch to reduce alerts"
 }
 
+variable "batch_window" {
+  type = number
+  default = 10
+  description = "The number of seconds to wait for lambda function"
+}
+
 variable "filter_prefix" {
   type = string
   default = ""
