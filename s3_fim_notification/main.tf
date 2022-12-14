@@ -13,7 +13,7 @@ resource "aws_s3_bucket_notification" "s3_bucket_notification" {
 }
 
 # Build the lambda function which is rebuilt on change
-resource "null_resource" "lambda_build" {
+resource "null_resource" "build" {
   triggers = {
     main = filesha256("src/main.go")
   }
