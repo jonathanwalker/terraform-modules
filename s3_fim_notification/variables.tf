@@ -2,6 +2,16 @@ variable "bucket_name" {
   type = string
 }
 
+variable "filter_prefix" {
+  type = string
+  default = ""
+}
+
+variable "filter_suffix" {
+  type = string
+  default = ""
+}
+
 variable "s3_events" {
   type = list(string)
   default = ["s3:ObjectCreated:*", "s3:ObjectRemoved:*"]
