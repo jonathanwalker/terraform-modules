@@ -1,6 +1,9 @@
 # create sqs queue for s3_bucket_notification
+# tfsec:ignore:aws-sqs-enable-queue-encryption
 resource "aws_sqs_queue" "queue" {
   name = "${var.bucket_name}-fim-queue"
+
+  visibility_timeout_seconds = 30
 }
 
 # create sqs queue policy for s3_bucket_notification

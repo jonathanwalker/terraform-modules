@@ -1,4 +1,5 @@
 # lambda function golang
+# tfsec:ignore:aws-lambda-enable-tracing
 resource "aws_lambda_function" "function" {
   filename      = "lambda.zip"
   function_name = "${var.bucket_name}-fim"
@@ -7,7 +8,7 @@ resource "aws_lambda_function" "function" {
 
   handler     = "main"
   runtime     = "go1.x"
-  timeout     = 300
+  timeout     = 30
   memory_size = 128
 
   source_code_hash = data.archive_file.zip.output_base64sha256
@@ -22,6 +23,7 @@ data "archive_file" "zip" {
   output_path = "lambda.zip"
 }
 
+# tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "log_group" {
   name = "${var.bucket_name}-fim"
 
