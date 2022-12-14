@@ -1,7 +1,6 @@
 resource "null_resource" "build" {
-  # trigger when src/main.go changes
   triggers = {
-    main = filemd5("${path.module}/src/main.go")
+    always = timestamp()
   }
 
   provisioner "local-exec" {
