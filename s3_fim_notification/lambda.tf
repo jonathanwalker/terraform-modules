@@ -69,7 +69,10 @@ resource "aws_iam_policy" "policy" {
 data "aws_iam_policy_document" "policy" {
   statement {
     sid     = "AllowSQSReceive"
-    actions = ["sqs:ReceiveMessage"]
+    actions = [
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage"
+    ]
 
     resources = [aws_sqs_queue.queue.arn]
   }
