@@ -1,5 +1,7 @@
 # s3_bucket_notification to lambda function
 resource "aws_s3_bucket_notification" "s3_bucket_notification" {
+  depends_on = [aws_lambda_function.function]
+  
   bucket = var.bucket_name
 
   lambda_function {
