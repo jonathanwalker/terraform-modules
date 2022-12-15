@@ -14,7 +14,6 @@ type S3Event struct {
 	EventTime    string `json:"eventTime"`
 	S3Bucket     string `json:"s3Bucket"`
 	S3Key        string `json:"s3Key"`
-	Size         int    `json:"size"`
 	UserIdentity string `json:"userIdentity"`
 }
 
@@ -43,16 +42,8 @@ func Handler(sqsEvent events.SQSEvent) (string, error) {
 			object_event.EventTime = record["eventTime"].(string)
 			object_event.S3Bucket = bucket["name"].(string)
 			object_event.S3Key = object["key"].(string)
-			object_event.Size = int(object["size"].(float64))
 			object_event.UserIdentity = userIdentity["principalId"].(string)
 			objects_changed = append(objects_changed, object_event)
-
-			// Print individual files changed to cloudwatch
-			e, err := json.Marshal(objects_changed)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Println(string(e))
 		}
 	}
 
