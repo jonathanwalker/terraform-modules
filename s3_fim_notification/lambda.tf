@@ -25,7 +25,7 @@ data "archive_file" "zip" {
 
 # tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "log_group" {
-  name = "${var.bucket_name}-fim"
+  name = "/aws/lambda/${var.bucket_name}-fim"
 
   retention_in_days = var.log_retention_days
 
@@ -81,7 +81,11 @@ data "aws_iam_policy_document" "policy" {
   }
   statement {
     sid     = "AllowCloudWatchLogs"
-    actions = ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"]
+    actions = [
+      "logs:CreateLogGroup", 
+      "logs:CreateLogStream", 
+      "logs:PutLogEvents"
+    ]
 
     resources = [aws_cloudwatch_log_group.log_group.arn]
   }
