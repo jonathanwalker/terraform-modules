@@ -4,14 +4,20 @@ variable "bucket_name" {
 
 variable "batch_size" {
   type = number
-  default = 100
+  default = 5000
   description = "The number of files to process in each batch to reduce alerts"
 }
 
 variable "batch_window" {
   type = number
-  default = 10
+  default = 60
   description = "The number of seconds to wait before the lambda function executes"
+}
+
+variable "lambda_timeout" {
+  type = number
+  default = 300
+  description = "The number of seconds to wait before the lambda function times out"
 }
 
 variable "filter_prefix" {
