@@ -34,7 +34,7 @@ resource "aws_cloudwatch_event_rule" "trigger" {
 
 resource "aws_lambda_permission" "allow_cloudwatch" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.lambda_function.arn
+  function_name = aws_lambda_function.function.arn
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.trigger.arn
 }
