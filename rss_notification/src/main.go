@@ -43,8 +43,6 @@ func main() {
 		log.Fatalf("Error reading config from environment: %v", err)
 	}
 
-	fmt.Println("Read config from environment")
-
 	// Create a new AWS session
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(cfg.Region)},
@@ -52,8 +50,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error creating AWS session: %v", err)
 	}
-
-	fmt.Println("Created session")
 
 	// Initialize SNS service
 	snsSvc := sns.New(sess)
@@ -64,8 +60,6 @@ func main() {
 	// Create a context with a timeout
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*1)
 	defer cancel()
-
-	fmt.Println("Starting handler")
 
 	// Call the handler function
 	if err := handler(ctx, cfg, snsSvc, ddbSvc); err != nil {
@@ -80,20 +74,16 @@ func handler(ctx context.Context, cfg *config, snsSvc *sns.SNS, ddbSvc *dynamodb
 		return fmt.Errorf("Error parsing RSS feed: %v", err)
 	}
 
-	fmt.Println("Fetched rss feed")
-
 	// Empty slice of rss feed items to be popuplated
 	var rssFeedItems []rssFeedItem
 	// Loop through the items in the rss feed
 	for _, item := range feed.Items {
-		fmt.Println("Parsing date")
 		// Identify the date of the rss feed item
 		published, err := parseDate(item)
 		if err != nil {
 			return fmt.Errorf("Error parsing date: %v", err)
 		}
 
-		fmt.Println("Checking when published")
 		// If the item is newer than hoursSince, add it to the slice
 		if time.Since(published) < time.Duration(cfg.HoursSince)*time.Hour {
 			rssFeedItems = append(rssFeedItems, rssFeedItem{
@@ -205,14 +195,17 @@ func parseDate(item *gofeed.Item) (time.Time, error) {
 
 // Filter the slice of rssFeedItems based on the given filter string
 func filterRSSFeedItems(items []rssFeedItem, filter string) []rssFeedItem {
-	var filtered []rssFeedItem
-	for _, item := range items {
-		if strings.Contains(item.Title, filter) || strings.Contains(item.Description, filter) {
+	filters := strings.Split(filter, ",")
 
-			filtered = append(filtered, item)
+	filteredItems := make([]rssFeedItem, 0)
+	for _, item := range items {
+		for _, f := range filters {
+			if strings.Contains(item.Title, f) || strings.Contains(item.Link, f) || strings.Contains(item.Description, f) {
+				filteredItems = append(filteredItems, item)
+			}
 		}
 	}
-	return filtered
+	return filteredItems
 }
 
 // Send notification to sns
