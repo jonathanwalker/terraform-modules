@@ -6,9 +6,6 @@ resource "aws_dynamodb_table" "table" {
     name = "url"
     type = "S"
   }
-  ttl {
-    attribute_name = "expiration_time"
-  }
 
   tags = var.tags
 }
