@@ -91,7 +91,7 @@ resource "aws_iam_policy" "policy" {
   policy = data.aws_iam_policy_document.policy.json
 }
 
-#
+# tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "policy" {
   statement {
     sid     = "AllowDynamoDBGetPut"
