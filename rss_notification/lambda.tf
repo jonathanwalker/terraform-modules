@@ -85,7 +85,7 @@ resource "aws_iam_role_policy_attachment" "policy" {
 
 # IAM policy for lambda
 resource "aws_iam_policy" "policy" {
-  name        = "${var.bucket_name}-fim-policy"
+  name        = "${var.alert_name}-policy"
   description = "Policy for lambda"
 
   policy = data.aws_iam_policy_document.policy.json

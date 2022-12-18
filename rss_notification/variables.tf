@@ -17,6 +17,11 @@ variable "rss_filter" {
   description = "Delimited list of strings by comma to filter RSS feed"
 }
 
+variable "cron_expression" {
+  type    = string
+  default = "0 * * * ? *"
+}
+
 variable "log_retention_days" {
   type = number
   default = 30
