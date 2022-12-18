@@ -231,7 +231,7 @@ func previouslyAlerted(item rssFeedItem, ddbSvc *dynamodb.DynamoDB, table string
 	result, err := ddbSvc.GetItem(&dynamodb.GetItemInput{
 		TableName: aws.String(table),
 		Key: map[string]*dynamodb.AttributeValue{
-			"link": {
+			"url": {
 				S: aws.String(item.Link),
 			},
 		},
