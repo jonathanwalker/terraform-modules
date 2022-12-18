@@ -59,7 +59,7 @@ resource "aws_cloudwatch_log_group" "log_group" {
 # IAM
 ###
 resource "aws_iam_role" "lambda_role" {
-  name = "lambda_role"
+  name = "${var.alert_name}-role"
 
   assume_role_policy = data.aws_iam_policy_document.trust.json
 
@@ -91,6 +91,7 @@ resource "aws_iam_policy" "policy" {
   policy = data.aws_iam_policy_document.policy.json
 }
 
+#
 data "aws_iam_policy_document" "policy" {
   statement {
     sid     = "AllowDynamoDBGetPut"
