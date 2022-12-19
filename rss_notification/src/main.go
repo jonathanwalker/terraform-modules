@@ -118,7 +118,7 @@ func handler(ctx context.Context) (MyResponse, error) {
 
 	return MyResponse{
 		Message: "Success",
-	}, nil
+	}, errors.New("Success")
 }
 
 // Read config from environment
