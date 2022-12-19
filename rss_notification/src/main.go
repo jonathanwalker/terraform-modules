@@ -248,7 +248,7 @@ func previouslyAlerted(item rssFeedItem, ddbSvc *dynamodb.DynamoDB, table string
 		},
 	})
 	if err != nil {
-		log.Fatalf("Error getting item from DynamoDB: %v", err)
+		log.Printf("Error getting item from DynamoDB: %v", err)
 		return false
 	}
 
@@ -280,7 +280,7 @@ func previouslyAlerted(item rssFeedItem, ddbSvc *dynamodb.DynamoDB, table string
 		// Log the result of the put item
 		log.Printf("Alert not in the table, adding \"%s\" as the primary key for the alert \"%v\"", item.Link, item.Title)
 		if err != nil {
-			log.Fatalf("Error putting item in DynamoDB: %v", err)
+			log.Printf("Error putting item in DynamoDB: %v", err)
 		}
 
 		return false
