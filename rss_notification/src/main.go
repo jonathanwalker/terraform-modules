@@ -3,9 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -18,7 +16,14 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
-// Items extracted from the RSS feed
+// Replace with the URL of the RSS feed you want to check
+var rssFeedURL = os.Getenv("RSS_FEED_URL")
+var hoursSince, _ = strconv.Atoi(os.Getenv("HOURS_SINCE"))
+var rssFilter = os.Getenv("RSS_FILTER")
+var dynamodbTable = os.Getenv("DYNAMODB_TABLE")
+var alertTopic = os.Getenv("ALERT_TOPIC")
+
+// create struct for RSS feed items including title, link, published date and description
 type rssFeedItem struct {
 	Title       string
 	Link        string
@@ -26,52 +31,15 @@ type rssFeedItem struct {
 	Description string
 }
 
-// Configuration for rss, state dynamodb table, and alert sns topic
-type config struct {
-	RssFeedURL    string
-	HoursSince    int
-	RssFilter     string
-	DynamodbTable string
-	AlertTopic    string
-	Region        string
-}
-
 func main() {
-	// Read config from environment
-	cfg, err := readConfigFromEnv()
-	if err != nil {
-		log.Fatalf("Error reading config from environment: %v", err)
-	}
-
-	// Create a new AWS session
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(cfg.Region)},
-	)
-	if err != nil {
-		log.Fatalf("Error creating AWS session: %v", err)
-	}
-
-	// Initialize SNS service
-	snsSvc := sns.New(sess)
-
-	// Initialize DynamoDB service
-	ddbSvc := dynamodb.New(sess)
-
-	// Create a context with a timeout
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*1)
-	defer cancel()
-
-	// Call the handler function
-	if err := handler(ctx, cfg, snsSvc, ddbSvc); err != nil {
-		log.Fatalf("Error in handler: %v", err)
-	}
+	handler(context.TODO())
 }
 
-func handler(ctx context.Context, cfg *config, snsSvc *sns.SNS, ddbSvc *dynamodb.DynamoDB) error {
+func handler(ctx context.Context) {
 	// Fetch the rss feed
-	feed, err := gofeed.NewParser().ParseURL(cfg.RssFeedURL)
+	feed, err := gofeed.NewParser().ParseURL(rssFeedURL)
 	if err != nil {
-		return fmt.Errorf("Error parsing RSS feed: %v", err)
+		fmt.Println(err)
 	}
 
 	// Empty slice of rss feed items to be popuplated
@@ -81,11 +49,11 @@ func handler(ctx context.Context, cfg *config, snsSvc *sns.SNS, ddbSvc *dynamodb
 		// Identify the date of the rss feed item
 		published, err := parseDate(item)
 		if err != nil {
-			return fmt.Errorf("Error parsing date: %v", err)
+			fmt.Errorf("Error parsing date: %v", err)
 		}
 
 		// If the item is newer than hoursSince, add it to the slice
-		if time.Since(published) < time.Duration(cfg.HoursSince)*time.Hour {
+		if time.Since(published) < time.Duration(hoursSince)*time.Hour {
 			rssFeedItems = append(rssFeedItems, rssFeedItem{
 				Title:       item.Title,
 				Link:        item.Link,
@@ -96,104 +64,105 @@ func handler(ctx context.Context, cfg *config, snsSvc *sns.SNS, ddbSvc *dynamodb
 	}
 
 	// If the rssFilter is not empty, filter the rss feed items
-	if cfg.RssFilter != "" {
-		rssFeedItems = filterRSSFeedItems(rssFeedItems, cfg.RssFilter)
+	if rssFilter != "" {
+		rssFeedItems = filterRSSFeedItems(rssFeedItems, rssFilter)
 	}
 
 	// Loop through the rss feed items
 	for _, item := range rssFeedItems {
 		// Check if the item has already been alerted
-		if previouslyAlerted(item, ddbSvc, cfg.DynamodbTable) == false {
+		if previouslyAlerted(item) == false {
 			// Send to sns
-			err := sendNotification(item, snsSvc, cfg.AlertTopic)
-			if err != nil {
-				log.Printf("Error sending notification: %v", err)
-			}
+			sendNotification(item)
 		} else {
-			log.Printf("%s has already alerted on.", item.Title)
+			fmt.Println(item.Title + " has already alerted on.")
 		}
 	}
-
-	return nil
 }
 
-// Read config from environment
-func readConfigFromEnv() (*config, error) {
-	// Feed URL to consume
-	rssFeedURL := os.Getenv("RSS_FEED_URL")
-	if rssFeedURL == "" {
-		return nil, fmt.Errorf("RSS_FEED_URL must be set")
-	}
+// Send notification to sns
+func sendNotification(item rssFeedItem) {
+	// Create a new session
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("us-east-1")},
+	)
 
-	// Retrieve number of hours since the last rss feed item
-	hoursSinceStr := os.Getenv("HOURS_SINCE")
-	if hoursSinceStr == "" {
-		return nil, fmt.Errorf("HOURS_SINCE must be set")
-	}
-	hoursSince, err := strconv.Atoi(hoursSinceStr)
+	// conver item to json string
+	b, err := json.Marshal(item)
 	if err != nil {
-		return nil, fmt.Errorf("Error parsing HOURS_SINCE: %v", err)
+		fmt.Println("error:", err)
 	}
 
-	// DynamoDB table to store state
-	dynamodbTable := os.Getenv("DYNAMODB_TABLE")
-	if dynamodbTable == "" {
-		return nil, fmt.Errorf("DYNAMODB_TABLE must be set")
+	// Send item to sns
+	svc := sns.New(sess)
+	params := &sns.PublishInput{
+		Message:  aws.String(string(b)),
+		TopicArn: aws.String(alertTopic),
 	}
-
-	// SNS topic to send alerts
-	alertTopic := os.Getenv("ALERT_TOPIC")
-	if alertTopic == "" {
-		return nil, fmt.Errorf("ALERT_TOPIC must be set")
+	_, err = svc.Publish(params)
+	if err != nil {
+		fmt.Println(err.Error())
 	}
-
-	// Filter for the rss feed items
-	rssFilter := os.Getenv("RSS_FILTER")
-
-	return &config{
-		RssFeedURL:    rssFeedURL,
-		HoursSince:    hoursSince,
-		RssFilter:     rssFilter,
-		DynamodbTable: dynamodbTable,
-		AlertTopic:    alertTopic,
-		Region:        "us-east-1",
-	}, nil
 }
 
-// Parse the published date of an RSS feed item
-func parseDate(item *gofeed.Item) (time.Time, error) {
-	// Try the "published" field first
-	if item.PublishedParsed != nil {
-		return *item.PublishedParsed, nil
+// Check if the rss feed has already been alerted on
+func previouslyAlerted(item rssFeedItem) bool {
+	// Create dynamodb client
+	sess, err := session.NewSession()
+	if err != nil {
+		fmt.Println(err)
+	}
+	client := dynamodb.New(sess)
+
+	result, err := client.GetItem(&dynamodb.GetItemInput{
+		TableName: aws.String(dynamodbTable),
+		Key: map[string]*dynamodb.AttributeValue{
+			"url": {
+				S: aws.String(item.Link),
+			},
+		},
+	})
+	if err != nil {
+		fmt.Println(err)
 	}
 
-	// Try the "updated" field next
-	if item.UpdatedParsed != nil {
-		return *item.UpdatedParsed, nil
-	}
-
-	// feedItem as json for errors
-	feedItem, _ := json.Marshal(item)
-
-	// Try the "date" custom field
-	date, ok := item.Custom["date"]
-	if !ok {
-		return time.Time{}, errors.New("Failed to parse time in RSS feed: " + string(feedItem))
-	}
-
-	// Try parsing the "date" field with two different layouts
-	layouts := []string{time.RFC1123, "Mon, 2 Jan 2006 15:04:05 -0700"}
-	for _, layout := range layouts {
-		t, err := time.Parse(layout, date)
-		if err == nil {
-			return t, nil
+	// If the feed has not been alerted, add it to the table
+	if len(result.Item) == 0 {
+		// ttl of hoursSince + 72 hours
+		expirationTime := time.Now().Add(time.Duration(hoursSince) + 72).Unix()
+		_, err := client.PutItem(&dynamodb.PutItemInput{
+			TableName: aws.String(dynamodbTable),
+			Item: map[string]*dynamodb.AttributeValue{
+				"url": {
+					S: aws.String(item.Link),
+				},
+				"title": {
+					S: aws.String(item.Title),
+				},
+				"description": {
+					S: aws.String(item.Description),
+				},
+				"published": {
+					S: aws.String(item.Published.Format(time.RFC3339)),
+				},
+				"alerted_at": {
+					S: aws.String(time.Now().Format(time.RFC3339)),
+				},
+				"ttl": {
+					N: aws.String(fmt.Sprintf("%d", expirationTime)),
+				},
+			},
+		})
+		if err != nil {
+			fmt.Println(err)
 		}
+		return false
+	} else {
+		return true
 	}
-
-	return time.Time{}, errors.New("Failed to parse time in RSS feed: " + string(feedItem))
 }
 
-// Filter the slice of rssFeedItems based on the given filter string
+// Filter the rss feed items if it contains a specific string
 func filterRSSFeedItems(items []rssFeedItem, filter string) []rssFeedItem {
 	filters := strings.Split(filter, ",")
 
@@ -208,43 +177,32 @@ func filterRSSFeedItems(items []rssFeedItem, filter string) []rssFeedItem {
 	return filteredItems
 }
 
-// Send notification to sns
-func sendNotification(item rssFeedItem, snsSvc *sns.SNS, topic string) error {
-	// convert item to json string
-	b, err := json.Marshal(item)
-	if err != nil {
-		return fmt.Errorf("Error marshalling item to JSON: %v", err)
+// Parse the date of the rss feed in multiple formats/locations
+func parseDate(item *gofeed.Item) (time.Time, error) {
+	// Try the "published" field first
+	if item.PublishedParsed != nil {
+		return *item.PublishedParsed, nil
 	}
 
-	// Send item to sns
-	params := &sns.PublishInput{
-		Message:  aws.String(string(b)),
-		TopicArn: aws.String(topic),
+	// Try the "updated" field next
+	if item.UpdatedParsed != nil {
+		return *item.UpdatedParsed, nil
 	}
-	_, err = snsSvc.Publish(params)
-	if err != nil {
-		return fmt.Errorf("Error publishing to SNS: %v", err)
-	}
-	return nil
-}
 
-// Check if the rss feed has already been alerted on
-func previouslyAlerted(item rssFeedItem, ddbSvc *dynamodb.DynamoDB, table string) bool {
-	// Check if the item has already been alerted
-	result, err := ddbSvc.GetItem(&dynamodb.GetItemInput{
-		TableName: aws.String(table),
-		Key: map[string]*dynamodb.AttributeValue{
-			"url": {
-				S: aws.String(item.Link),
-			},
-		},
-	})
+	// Try the "date" custom field
+	date, ok := item.Custom["date"]
+	if !ok {
+		return time.Time{}, fmt.Errorf("no time field found in item")
+	}
+
+	// Try parsing the "date" field with two different layouts
+	t, err := time.Parse(time.RFC1123, date)
 	if err != nil {
-		log.Printf("Error getting item from DynamoDB: %v", err)
-		return false
+		t, err = time.Parse("Mon, 2 Jan 2006 15:04:05 -0700", date)
+		if err != nil {
+			return time.Time{}, fmt.Errorf("error parsing time: %v", err)
+		}
 	}
-	if result.Item == nil {
-		return false
-	}
-	return true
+
+	return t, nil
 }
