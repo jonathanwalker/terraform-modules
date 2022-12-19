@@ -79,7 +79,7 @@ func handler(ctx context.Context) (MyResponse, error) {
 		// Identify the date of the rss feed item
 		published, err := parseDate(item)
 		if err != nil {
-			log.Fatalf("Error parsing date: %v", err)
+			log.Printf("Error parsing date: %v", err)
 		}
 
 		// If the item is newer than hoursSince, add it to the slice
@@ -107,7 +107,7 @@ func handler(ctx context.Context) (MyResponse, error) {
 			// Send to sns
 			err := sendNotification(item, snsSvc, cfg.AlertTopic)
 			if err != nil {
-				log.Printf("Error sending notification: %v", err)
+				log.Fatalf("Error sending notification: %v", err)
 			}
 		} else {
 			log.Printf("%s has already alerted on.", item.Title)
