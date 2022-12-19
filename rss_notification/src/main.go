@@ -36,11 +36,16 @@ type config struct {
 	Region        string
 }
 
+// Lambda Success Response
+type MyResponse struct {
+	Message string `json:"message"`
+}
+
 func main() {
 	handler(context.TODO())
 }
 
-func handler(ctx context.Context) {
+func handler(ctx context.Context) (MyResponse, error) {
 	// Read config from environment
 	cfg, err := readConfigFromEnv()
 	if err != nil {
@@ -108,6 +113,10 @@ func handler(ctx context.Context) {
 			log.Printf("%s has already alerted on.", item.Title)
 		}
 	}
+
+	return MyResponse{
+		Message: "Success",
+	}, nil
 }
 
 // Read config from environment
