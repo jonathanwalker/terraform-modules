@@ -195,19 +195,22 @@ func parseDate(item *gofeed.Item) (time.Time, error) {
 
 // Filter the slice of rssFeedItems based on the given filter string
 func filterRSSFeedItems(items []rssFeedItem, filter string) []rssFeedItem {
-	var filtered []rssFeedItem
-	for _, item := range items {
-		if strings.Contains(item.Title, filter) || strings.Contains(item.Description, filter) {
+	filters := strings.Split(filter, ",")
 
-			filtered = append(filtered, item)
+	filteredItems := make([]rssFeedItem, 0)
+	for _, item := range items {
+		for _, f := range filters {
+			if strings.Contains(item.Title, f) || strings.Contains(item.Link, f) || strings.Contains(item.Description, f) {
+				filteredItems = append(filteredItems, item)
+			}
 		}
 	}
-	return filtered
+	return filteredItems
 }
 
 // Send notification to sns
 func sendNotification(item rssFeedItem, snsSvc *sns.SNS, topic string) error {
-	// conver item to json string
+	// convert item to json string
 	b, err := json.Marshal(item)
 	if err != nil {
 		return fmt.Errorf("Error marshalling item to JSON: %v", err)
