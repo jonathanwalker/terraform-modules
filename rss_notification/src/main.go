@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -37,20 +38,19 @@ type config struct {
 }
 
 // Lambda Success Response
-type MyResponse struct {
+type Response struct {
 	Message string `json:"message"`
 }
 
 func main() {
-	handler(context.TODO())
-	log.Printf("Finished the lambda function")
+	lambda.Start(HandleRequest)
 }
 
-func handler(ctx context.Context) (MyResponse, error) {
+func HandleRequest(ctx context.Context) (Response, error) {
 	// Read config from environment
 	cfg, err := readConfigFromEnv()
 	if err != nil {
-		return MyResponse{Message: "Failed"}, fmt.Errorf("Error getting session: %v", err)
+		return Response{Message: "Failed"}, fmt.Errorf("Error getting session: %v", err)
 	}
 
 	// Create a new AWS session
@@ -58,7 +58,7 @@ func handler(ctx context.Context) (MyResponse, error) {
 		Region: aws.String(cfg.Region)},
 	)
 	if err != nil {
-		return MyResponse{Message: "Failed"}, fmt.Errorf("Error getting session: %v", err)
+		return Response{Message: "Failed"}, fmt.Errorf("Error getting session: %v", err)
 	}
 
 	// Initialize SNS service
@@ -70,7 +70,7 @@ func handler(ctx context.Context) (MyResponse, error) {
 	// Fetch the rss feed
 	feed, err := gofeed.NewParser().ParseURL(cfg.RssFeedURL)
 	if err != nil {
-		return MyResponse{Message: "Failed"}, fmt.Errorf("Error parsing rss feed: %v", err)
+		return Response{Message: "Failed"}, fmt.Errorf("Error parsing rss feed: %v", err)
 	}
 
 	// Empty slice of rss feed items to be popuplated
@@ -80,7 +80,7 @@ func handler(ctx context.Context) (MyResponse, error) {
 		// Identify the date of the rss feed item
 		published, err := parseDate(item)
 		if err != nil {
-			return MyResponse{Message: "Failed"}, fmt.Errorf("Error parsing date: %v", err)
+			return Response{Message: "Failed"}, fmt.Errorf("Error parsing date: %v", err)
 		}
 
 		// If the item is newer than hoursSince, add it to the slice
@@ -108,16 +108,14 @@ func handler(ctx context.Context) (MyResponse, error) {
 			// Send to sns
 			err := sendNotification(item, snsSvc, cfg.AlertTopic)
 			if err != nil {
-				return MyResponse{Message: "Failed"}, fmt.Errorf("Error sending sns notification: %v", err)
+				return Response{Message: "Failed"}, fmt.Errorf("Error sending sns notification: %v", err)
 			}
 		} else {
 			log.Printf("%s has already alerted on.", item.Title)
 		}
 	}
 
-	log.Printf("Sending a success signal")
-
-	return MyResponse{
+	return Response{
 		Message: "Success",
 	}, errors.New("Success")
 }
