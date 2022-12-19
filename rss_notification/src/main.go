@@ -269,7 +269,7 @@ func previouslyAlerted(item rssFeedItem, ddbSvc *dynamodb.DynamoDB, table string
 		// Log the result of the put item
 		log.Printf("Alert not in the table, adding \"%s\" as the primary key for the alert \"%v\"", item.Link, item.Title)
 		if err != nil {
-			fmt.Println(err)
+			log.Fatalf("Error putting item in DynamoDB: %v", err)
 		}
 
 		return false
