@@ -114,6 +114,8 @@ func handler(ctx context.Context) (MyResponse, error) {
 		}
 	}
 
+	log.Printf("Sending a success signal")
+
 	return MyResponse{
 		Message: "Success",
 	}, nil
