@@ -43,6 +43,7 @@ type MyResponse struct {
 
 func main() {
 	handler(context.TODO())
+	log.Printf("Finished the lambda function")
 }
 
 func handler(ctx context.Context) (MyResponse, error) {
