@@ -49,7 +49,7 @@ func handler(ctx context.Context) (MyResponse, error) {
 	// Read config from environment
 	cfg, err := readConfigFromEnv()
 	if err != nil {
-		log.Fatalf("Error reading config from environment: %v", err)
+		return MyResponse{Message: "Failed"}, fmt.Errorf("Error getting session: %v", err)
 	}
 
 	// Create a new AWS session
@@ -57,7 +57,7 @@ func handler(ctx context.Context) (MyResponse, error) {
 		Region: aws.String(cfg.Region)},
 	)
 	if err != nil {
-		log.Fatalf("Error creating AWS session: %v", err)
+		return MyResponse{Message: "Failed"}, fmt.Errorf("Error getting session: %v", err)
 	}
 
 	// Initialize SNS service
@@ -69,7 +69,7 @@ func handler(ctx context.Context) (MyResponse, error) {
 	// Fetch the rss feed
 	feed, err := gofeed.NewParser().ParseURL(cfg.RssFeedURL)
 	if err != nil {
-		log.Fatalf("Error parsing rss feed: %v", err)
+		return MyResponse{Message: "Failed"}, fmt.Errorf("Error parsing rss feed: %v", err)
 	}
 
 	// Empty slice of rss feed items to be popuplated
@@ -79,7 +79,7 @@ func handler(ctx context.Context) (MyResponse, error) {
 		// Identify the date of the rss feed item
 		published, err := parseDate(item)
 		if err != nil {
-			log.Printf("Error parsing date: %v", err)
+			return MyResponse{Message: "Failed"}, fmt.Errorf("Error parsing date: %v", err)
 		}
 
 		// If the item is newer than hoursSince, add it to the slice
@@ -107,7 +107,7 @@ func handler(ctx context.Context) (MyResponse, error) {
 			// Send to sns
 			err := sendNotification(item, snsSvc, cfg.AlertTopic)
 			if err != nil {
-				log.Fatalf("Error sending notification: %v", err)
+				return MyResponse{Message: "Failed"}, fmt.Errorf("Error sending sns notification: %v", err)
 			}
 		} else {
 			log.Printf("%s has already alerted on.", item.Title)
