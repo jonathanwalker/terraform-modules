@@ -1,3 +1,9 @@
+# Athena Query Results Bucket
+
+This module sets up the Athena query results bucket with s3_sse, ninety day expiration on results, and 100GB bytes scanned limits on the primary athena workgroup.
+
+`tg import aws_athena_workgroup.workgroup primary`
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
