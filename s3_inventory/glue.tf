@@ -11,7 +11,7 @@ resource "aws_glue_catalog_table" "table" {
   table_type = "EXTERNAL_TABLE"
 
   storage_descriptor {
-    location = "s3://${aws_s3_bucket.inventory_bucket.id}/${each.value["bucket"]}/${each.value["bucket"]}/hive"
+    location = "s3://${aws_s3_bucket.inventory_bucket.id}/${each.value["bucket"]}/${each.value["bucket"]}-inventory/hive"
 
     input_format  = "org.apache.hadoop.hive.ql.io.SymlinkTextInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat"
