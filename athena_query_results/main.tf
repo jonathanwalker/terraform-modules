@@ -19,7 +19,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "sse" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "lifecycle" {
-  bucket = aws_s3_bucket.athena-workspace.bucket
+  bucket = aws_s3_bucket.bucket.bucket
 
   rule {
     id     = "expire"
@@ -50,12 +50,12 @@ resource "aws_athena_workgroup" "workgroup" {
 
     bytes_scanned_cutoff_per_query = var.max_bytes_scanned_per_query
 
-    encryption_configuration {
-      encryption_option = "SSE_S3"
-    }
-
     result_configuration {
       output_location = "s3://${aws_s3_bucket.bucket.id}/"
+
+      encryption_configuration {
+        encryption_option = "SSE_S3"
+      }
     }
   }
 
