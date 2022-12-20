@@ -92,7 +92,7 @@ resource "aws_glue_catalog_table" "table" {
     ser_de_info {
       name = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
       parameters = {
-        "serialization.format" = "\t"
+        "serialization.format" = "1"
       }
     }
   }
