@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
 
@@ -22,18 +21,29 @@ type Response struct {
 }
 
 func handler(ctx context.Context, event Event) (Response, error) {
+	// Check to see if you have Args and Command in the event
+	if event.Command == "" || len(event.Args) == 0 {
+		return Response{
+			Error: "command and args are required",
+		}, nil
+	}
+	// Set the $HOME environment variable to /tmp so that nuclei can write to the filesystem
 	homePath := "/tmp/"
 	os.Setenv("HOME", homePath)
-	// Run the nuclei CLI with the command and args from the event.
+
+	// Run the nuclei binary with the command and args
 	cmd := exec.Command(event.Command, event.Args...)
 	output, err := cmd.CombinedOutput()
-	fmt.Println(string(output))
+
+	// If there is an error, return the error
 	if err != nil {
 		return Response{
 			Output: string(output),
 			Error:  err.Error(),
 		}, nil
 	}
+
+	// Return the output of the command
 	return Response{
 		Output: string(output),
 	}, nil
