@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 
 	"github.com/aws/aws-lambda-go/lambda"
@@ -21,6 +22,8 @@ type Response struct {
 }
 
 func handler(ctx context.Context, event Event) (Response, error) {
+	homePath := "/tmp/"
+	os.Setenv("HOME", homePath)
 	// Run the nuclei CLI with the command and args from the event.
 	cmd := exec.Command(event.Command, event.Args...)
 	output, err := cmd.CombinedOutput()
