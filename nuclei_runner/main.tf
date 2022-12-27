@@ -42,8 +42,8 @@ resource "aws_lambda_invocation" "run_nuclei" {
   }
 
   input = jsonencode({
-    command = "/opt/nuclei"
-    arg = var.nuclei_args
+    Command = "/opt/nuclei"
+    Args = var.nuclei_args
   })
 }
 
