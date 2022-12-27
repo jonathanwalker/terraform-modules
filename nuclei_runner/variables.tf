@@ -15,7 +15,7 @@ variable "project_name" {
 
 variable "nuclei_args" {
   type    = list(string)
-  default = ["-u", "https://devsecopsdocs.com", "-ud", "/tmp/nuclei-templates", "-t", "takeovers/", "-stats", "-c", "50", "-rl", "300", "-timeout", "5""]
+  default = ["-u", "https://devsecopsdocs.com", "-ud", "/tmp/nuclei-templates", "-t", "takeovers/", "-stats", "-c", "50", "-rl", "300", "-timeout", "5"]
 }
 
 variable "tags" {
