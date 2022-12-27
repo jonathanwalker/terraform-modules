@@ -8,9 +8,9 @@ variable "nuclei_arch" {
   default     = "linux_amd64"
 }
 
-variable "bucket_name" {
-  description = "Name of the bucket to store binaries, logs, etc."
-  default     = "nuclei-artifacts"
+variable "project_name" {
+  description = "Name of the project"
+  default     = "nuclei-scanner"
 }
 
 variable "tags" {
