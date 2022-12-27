@@ -32,14 +32,16 @@ resource "aws_lambda_layer_version" "layer" {
 }
 
 # Test lambda function for now
-resource "aws_lambda_function_invocation" "run_nuclei" {
+resource "aws_lambda_invocation" "run_nuclei" {
   function_name = "${aws_lambda_function.run_nuclei.arn}"
-  payload = <<EOF
-{
-  "command": "nuclei",
-  "args": ["-u", "https://devsecopsdocs.com"]
+  input = input = jsonencode({
+    command = "nuclei"
+    arg = ["-u", "https://devsecopsdocs.com"]
+  })
 }
-EOF
+
+output "result_entry" {
+  value = jsondecode(aws_lambda_invocation.run_nuclei.result)["Output"]
 }
 
 
@@ -61,7 +63,7 @@ EOF
 resource "aws_cloudwatch_log_group" "log_group" {
   name = "/aws/lambda/${var.project_name}-function"
 
-  retention_in_days = var.log_retention_days
+  retention_in_days = 90
 
   tags = var.tags
 }

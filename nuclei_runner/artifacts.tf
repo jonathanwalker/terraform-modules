@@ -9,7 +9,7 @@ resource "null_resource" "download-nuclei" {
   }
 }
 
-resource "aws_s3_upload" "upload" {
+resource "aws_s3_object" "upload_nuclei" {
   bucket = aws_s3_bucket.bucket.id
   key    = "nuclei.zip"
   source = "${path.module}/src/nuclei.zip"
