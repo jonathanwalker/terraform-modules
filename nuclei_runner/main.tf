@@ -36,7 +36,7 @@ resource "aws_lambda_invocation" "run_nuclei" {
   function_name = "${aws_lambda_function.run_nuclei.arn}"
   input = input = jsonencode({
     command = "nuclei"
-    arg = ["-u", "https://devsecopsdocs.com"]
+    arg = "https://devsecopsdocs.com"
   })
 }
 
