@@ -15,6 +15,19 @@ resource "aws_s3_object" "upload_nuclei" {
   source = "${path.module}/src/nuclei.zip"
 }
 
+# Nuclei Config
+data "archive_file" "zip" {
+  type        = "zip"
+  source_file = "config/report-config.yaml"
+  output_path = "report-config.zip"
+}
+
+resource "aws_s3_object" "upload_config" {
+  bucket = aws_s3_bucket.bucket.id
+  key    = "report-config.zip"
+  source = "${path.module}/report-config.zip"
+}
+
 # Build lambda function
 resource "null_resource" "build" {
   triggers = {
