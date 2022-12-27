@@ -35,6 +35,12 @@ resource "aws_lambda_layer_version" "layer" {
 # Test lambda function for now
 resource "aws_lambda_invocation" "run_nuclei" {
   function_name = aws_lambda_function.function.arn
+
+  # Always trigger execution
+  triggers = {
+    always = timestamp()
+  }
+
   input = jsonencode({
     command = "nuclei"
     arg = ["-u", "https://devsecopsdocs.com"]
