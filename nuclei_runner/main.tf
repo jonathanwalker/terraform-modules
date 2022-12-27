@@ -13,14 +13,6 @@ resource "aws_lambda_function" "function" {
 
   source_code_hash = data.archive_file.zip.output_base64sha256
 
-  # environment variables
-  environment {
-    variables = {
-      "LAMBDA_TASK_ROOT": "/var/task"
-      "LAMBDA_RUNTIME_DIR": "/var/runtime"
-    }
-  }
-
   tags = var.tags
 }
 
