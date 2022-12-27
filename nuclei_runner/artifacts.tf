@@ -16,7 +16,7 @@ resource "aws_s3_object" "upload_nuclei" {
 }
 
 # Nuclei Config
-data "archive_file" "zip" {
+data "archive_file" "report_config" {
   type        = "zip"
   source_file = "config/report-config.yaml"
   output_path = "report-config.zip"
