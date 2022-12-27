@@ -42,8 +42,8 @@ resource "aws_lambda_invocation" "run_nuclei" {
   }
 
   input = jsonencode({
-    command = "nuclei"
-    arg = ["-u", "https://devsecopsdocs.com"]
+    command = "/opt/nuclei"
+    arg = var.nuclei_args
   })
 }
 

@@ -13,6 +13,11 @@ variable "project_name" {
   default     = "nuclei-scanner"
 }
 
+variable "nuclei_args" {
+  type    = list(string)
+  default = ["-u", "https://devsecopsdocs.com", "-ud", "/tmp/nuclei-templates", "-t", "takeovers/", "-stats", "-c", "50", "-rl", "300", "-timeout", "5""]
+}
+
 variable "tags" {
   type = map(string)
   default = {

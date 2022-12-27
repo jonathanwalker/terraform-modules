@@ -22,9 +22,7 @@ type Response struct {
 
 func handler(ctx context.Context, event Event) (Response, error) {
 	// Run the nuclei CLI with the command and args from the event.
-	// cmd := exec.Command(event.Command, event.Args...)
-	args := []string{"-u", "https://devsecopsdocs.com", "-c", "50", "-rl", "300", "-timeout", "5", "-t", "dns/", "-stats"}
-	cmd := exec.Command("/opt/nuclei", args...)
+	cmd := exec.Command(event.Command, event.Args...)
 	output, err := cmd.CombinedOutput()
 	fmt.Println(string(output))
 	if err != nil {
