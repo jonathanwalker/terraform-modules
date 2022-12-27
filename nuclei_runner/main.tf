@@ -33,7 +33,7 @@ resource "aws_lambda_layer_version" "layer" {
 
 # Test lambda function for now
 resource "aws_lambda_invocation" "run_nuclei" {
-  function_name = aws_lambda_function.run_nuclei.arn
+  function_name = aws_lambda_function.function.arn
   input = jsonencode({
     command = "nuclei"
     arg = ["-u", "https://devsecopsdocs.com"]
