@@ -15,7 +15,17 @@ variable "project_name" {
 
 variable "nuclei_args" {
   type    = list(string)
-  default = ["-u", "https://devsecopsdocs.com", "-config-directory", "/tmp/nuclei/", "-t", "takeovers/", "-stats", "-c", "50", "-rl", "300", "-timeout", "5"]
+  default = ["-u", "https://devsecopsdocs.com", "-ud", "/tmp/", "-rc", "/opt/report-config.yaml", "-t", "takeovers/", "-stats", "-c", "50", "-rl", "300", "-timeout", "5"]
+}
+
+variable "nuclei_timeout" {
+  type = number
+  default = 900
+}
+
+variable "memory_size" {
+  type = number
+  default = 512
 }
 
 variable "tags" {

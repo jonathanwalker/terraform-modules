@@ -8,8 +8,8 @@ resource "aws_lambda_function" "function" {
 
   handler     = "main"
   runtime     = "go1.x"
-  timeout     = 300
-  memory_size = 128
+  timeout     = var.nuclei_timeout
+  memory_size = var.memory_size
 
   source_code_hash = data.archive_file.zip.output_base64sha256
 
