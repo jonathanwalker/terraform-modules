@@ -84,7 +84,7 @@ func handler(ctx context.Context, event Event) (Response, error) {
 				Error:  err.Error(),
 			}, nil
 		}
-		fmt.Println("Findings: ", jsonFindings)
+		fmt.Println("Findings: ", string(jsonFindings))
 		return Response{
 			Output: string(jsonFindings),
 		}, nil
