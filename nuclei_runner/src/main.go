@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"os"
 	"os/exec"
 
@@ -84,7 +83,6 @@ func handler(ctx context.Context, event Event) (Response, error) {
 				Error:  err.Error(),
 			}, nil
 		}
-		fmt.Println("Findings: ", string(jsonFindings))
 		return Response{
 			Output: string(jsonFindings),
 		}, nil
@@ -151,9 +149,6 @@ func jsonOutputFindings(scanOutputFile string) ([]interface{}, error) {
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}
-
-	// Print the findings
-	fmt.Println("Findings: ", findings)
 
 	// Return the findings
 	return findings, nil
