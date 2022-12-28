@@ -135,6 +135,13 @@ func writeTargets(targets []string) (string, error) {
 		}
 	}
 
+	// Print the contents of the file to the console for debugging
+	data, err := os.ReadFile(targetsFile)
+	if err != nil {
+		return "", err
+	}
+	fmt.Println(string(data))
+
 	// Return the filename
 	return targetsFile, nil
 }
