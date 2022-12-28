@@ -30,10 +30,10 @@ func handler(ctx context.Context, event Event) (Response, error) {
 		}, nil
 	}
 
-	// Check to see if output was specified to json
+	// Check to see if it contains -json
 	jsonExport := false
-	if !contains(event.Args, "-json") && !contains(event.Args, "-o") {
-		event.Args = append(event.Args, "-json", "-o", "/tmp/output.json", "-silent")
+	if contains(event.Args, "-json") {
+		event.Args = append(event.Args, "-o", "/tmp/output.json", "-silent")
 		// delete the output file if it exists
 		os.Remove("/tmp/output.json")
 		// Set jsonExport to true
