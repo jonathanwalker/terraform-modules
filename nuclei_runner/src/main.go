@@ -14,7 +14,7 @@ import (
 
 // Event is the input event for the Lambda function.
 type Event struct {
-	Targets []string `json:"command"`
+	Targets []string `json:"targets"`
 	Args    []string `json:"args"`
 }
 
