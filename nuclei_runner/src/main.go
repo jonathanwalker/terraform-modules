@@ -35,12 +35,16 @@ func handler(ctx context.Context, event Event) (Response, error) {
 	os.Setenv("HOME", fileSystem)
 
 	// Check to see if you have Args and Command in the event
-	if len(event.Args) == 0 || len(event.Args) == 0 {
+	if len(event.Targets) == 0 || len(event.Args) == 0 {
 		return Response{
 			Error: "Nuclei requires a targets and args to run. Please specify the target(s) and args within the event.",
 		}, nil
 	}
 
+	// Print debugging
+	fmt.Println("Targets: ", event.Targets)
+	fmt.Println("Args: ", event.Args)
+	fmt.Println("Length of Targets: ", len(event.Targets))
 	// Check to see if the target is a single target or a list of targets
 	if len(event.Targets) == 1 {
 		// If it's a single target it prepends -u target to the args
