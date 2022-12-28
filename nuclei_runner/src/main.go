@@ -75,7 +75,7 @@ func handler(ctx context.Context, event Event) (Response, error) {
 
 	// Send the scan results to the sink
 	if event.Output == "json" {
-		findings, err := jsonFindings(scanOutput)
+		findings, err := jsonOutputFindings(scanOutput)
 		// convert it to json
 		jsonFindings, err := json.Marshal(findings)
 		if err != nil {
@@ -127,7 +127,7 @@ func writeTargets(targets []string) (string, error) {
 }
 
 // jsonFindings reads the output.json file and returns the findings
-func jsonFindings(scanOutputFile string) ([]interface{}, error) {
+func jsonOutputFindings(scanOutputFile string) ([]interface{}, error) {
 	file, err := os.Open(scanOutputFile)
 	if err != nil {
 		return nil, err
