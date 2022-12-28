@@ -13,7 +13,7 @@ import (
 
 // Event is the input event for the Lambda function.
 type Event struct {
-	Command string   `json:"command"`
+	Targets []string `json:"command"`
 	Args    []string `json:"args"`
 }
 
@@ -23,34 +23,63 @@ type Response struct {
 	Error  string `json:"error"`
 }
 
-// Lambda layer stores the nuclei binary in /opt/nuclei
+// Variables for the nuclei binary, filesystem location, and temporary files
 const nucleiBinary = "/opt/nuclei"
+const fileSystem = "/tmp/"
+const targetsFile = "/tmp/targets.txt"
+const scanOutput = "/tmp/output.json"
 
 func handler(ctx context.Context, event Event) (Response, error) {
+	// Set the $HOME environment so nuclei can write inside of lambda
+	os.Setenv("HOME", fileSystem)
+
 	// Check to see if you have Args and Command in the event
-	if event.Command == "" || len(event.Args) == 0 {
+	if len(event.Args) == 0 || len(event.Args) == 0 {
 		return Response{
-			Error: "Nuclei requires a command and args to run. Please specify a command and args within the event. Example: {\"Command\": \"/opt/nuclei\", \"Args\": [\"-u\", \"https://example.com\"]}",
+			Error: "Nuclei requires a targets and args to run. Please specify the target(s) and args within the event.",
 		}, nil
 	}
 
-	// Check to see if it contains -json
+	// Check to see if the target is a single target or a list of targets
+	if len(event.Targets) == 1 {
+		// If it's a single target it prepends -u target to the args
+		event.Args = append([]string{"-u", event.Targets[0]}, event.Args...)
+	} else {
+		// If it's a list of targets write them to a file and prepends -l targets.txt to the args
+		targetsFile, err := writeTargets(event.Targets)
+		if err != nil {
+			return Response{
+				Error: err.Error(),
+			}, nil
+		}
+		event.Args = append([]string{"-l", targetsFile}, event.Args...)
+	}
+
+	// Check to see if it contains -json, to write the file to disk and return the findings in json
 	jsonExport := false
 	if contains(event.Args, "-json") {
-		event.Args = append(event.Args, "-o", "/tmp/output.json", "-silent")
-		// delete the output file if it exists
-		os.Remove("/tmp/output.json")
+		event.Args = append(event.Args, "-o", scanOutput, "-silent")
+		// Attempt to delete the file if still warm
+		err := os.Remove(scanOutput)
+		if err != nil {
+			return Response{
+				Error: err.Error(),
+			}, nil
+		}
 		// Set jsonExport to true
 		jsonExport = true
 	}
 
-	// Set the $HOME environment variable to /tmp so that nuclei can write to the filesystem
-	homePath := "/tmp/"
-	os.Setenv("HOME", homePath)
-
 	// Run the nuclei binary with the command and args
 	cmd := exec.Command(nucleiBinary, event.Args...)
 	output, err := cmd.CombinedOutput()
+	base64output := base64.StdEncoding.EncodeToString([]byte(output))
+	if err != nil {
+		return Response{
+			Output: string(base64output),
+			Error:  err.Error(),
+		}, nil
+	}
 
 	// If the output was specified to json; read the file, parse the json, and return the findings
 	if jsonExport {
@@ -75,25 +104,41 @@ func handler(ctx context.Context, event Event) (Response, error) {
 		}, nil
 	}
 
-	// If there is an error, return the error
-	if err != nil {
-		return Response{
-			Output: string(output),
-			Error:  err.Error(),
-		}, nil
-	}
-
-	// Return the output of the command
-	// Convert output to base64
-	base64output := base64.StdEncoding.EncodeToString([]byte(output))
+	// Return the output of the successful command in base64
 	return Response{
 		Output: string(base64output),
 	}, nil
 }
 
+// Write targets to a file on disk and return filename
+func writeTargets(targets []string) (string, error) {
+	// Check if the targets file exists, if it does delete it
+	if _, err := os.Stat(targetsFile); err == nil {
+		os.Remove(targetsFile)
+	}
+
+	// Create a file
+	file, err := os.Create(targetsFile)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	// Write the list to the file.
+	for _, target := range targets {
+		_, err := file.WriteString(target + "\n")
+		if err != nil {
+			// Handle the error.
+		}
+	}
+
+	// Return the filename
+	return targetsFile, nil
+}
+
 // jsonFindings reads the output.json file and returns the findings
 func jsonFindings() ([]interface{}, error) {
-	file, err := os.Open("/tmp/output.json")
+	file, err := os.Open(scanOutput)
 	if err != nil {
 		return nil, err
 	}

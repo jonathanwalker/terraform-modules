@@ -14,11 +14,11 @@ The purpose of this module is to allow you to execute nuclei through lambda invo
 
 With any engineering project, design decisions are made based on the requirements of a given project. In which these designs have some limitations which are the following:
 
-- Default behavior is to just output the contents of nuclei in the logs and the output as base64
+- Default behavior is to just output the contents of nuclei in the logs and the output as base64 and can be displayed in your terminal as `cat output.json | jq '.output' --raw-output | base64 -d`
 - Args are passed directly, to allow you to specify any arguments to nuclei, in invoking the lambda function and since the sink is `exec.Command` this is vulnerable to remote code execution by design and can be easily escaped
 - When the `-json` flag is passed, it automatically outputs the json to disk and silents nuclei `"-o", "/tmp/output.json", "-silent"` so be sure not to specify output location and only `-json` is sufficient
 - Nuclei refuses to not write to `$HOME/.config` so the `HOME`, which is not a writable filesystem with lambda, is set to `/tmp` which can cause warm starts to have the same filesystem and perhaps poison future configurations
-
+- Lambda function in golang is rebuilt on every apply for ease of development
 
 ## Lambda Usage
 
