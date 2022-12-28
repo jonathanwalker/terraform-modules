@@ -152,6 +152,9 @@ func jsonOutputFindings(scanOutputFile string) ([]interface{}, error) {
 		return nil, err
 	}
 
+	// Print the findings
+	fmt.Println("Findings: ", findings)
+
 	// Return the findings
 	return findings, nil
 }
