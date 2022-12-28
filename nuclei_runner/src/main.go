@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/exec"
 
@@ -72,6 +73,8 @@ func handler(ctx context.Context, event Event) (Response, error) {
 
 	// Run the nuclei binary with the command and args
 	cmd := exec.Command(nucleiBinary, event.Args...)
+	// Print the command to the console for debugging
+	fmt.Printf("%s %v\n", nucleiBinary, event.Args)
 	output, err := cmd.CombinedOutput()
 	base64output := base64.StdEncoding.EncodeToString([]byte(output))
 	if err != nil {
