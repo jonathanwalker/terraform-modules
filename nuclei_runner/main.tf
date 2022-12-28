@@ -32,26 +32,6 @@ resource "aws_lambda_layer_version" "layer" {
   compatible_runtimes = ["go1.x"]
 }
 
-# Test lambda function for now
-resource "aws_lambda_invocation" "run_nuclei" {
-  function_name = aws_lambda_function.function.arn
-
-  # Always trigger execution
-  triggers = {
-    always = timestamp()
-  }
-
-  input = jsonencode({
-    Command = "/opt/nuclei"
-    Args = var.nuclei_args
-  })
-}
-
-output "result_entry" {
-  value = jsondecode(aws_lambda_invocation.run_nuclei.result)["Output"]
-}
-
-
 # Trigger
 # resource "aws_cloudwatch_event_rule" "trigger" {
 #   name        = "${var.project_name}-trigger"
