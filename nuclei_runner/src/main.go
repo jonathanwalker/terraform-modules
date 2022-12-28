@@ -58,13 +58,7 @@ func handler(ctx context.Context, event Event) (Response, error) {
 
 	if event.Output == "json" {
 		event.Args = append(event.Args, "-o", scanOutput, "-silent")
-		// Attempt to delete the file if still warm
-		err := os.Remove(scanOutput)
-		if err != nil {
-			return Response{
-				Error: err.Error(),
-			}, nil
-		}
+		os.Remove(scanOutput)
 	}
 
 	// Run the nuclei binary with the command and args
