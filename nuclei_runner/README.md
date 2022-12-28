@@ -6,7 +6,78 @@ This terraform module allows you to execute [Nuclei](https://github.com/projectd
 
 Nuclei can help you identify technologies running within your infrastructure, misconfigurations, exploitable vulnerabilities, network protocols, default credentials, exposed panels, takeovers, and so much more. Continuously monitoring for such vulnerabilities within your network can be crucial to providing you with a last line of defense against vulnerabilities hidden within your cloud infrastructure. 
 
-## 
+## Purpose
+
+The purpose of this module is to allow you to execute nuclei through lambda invocations and get the results in a reasonable location. 
+
+## Engineering Decisions
+
+With any engineering project, design decisions are made based on the requirements of a given project. In which these designs have some limitations which are the following:
+
+- Default behavior is to just output the contents of nuclei in the logs and the output as base64
+- Args are passed directly, to allow you to specify any arguments to nuclei, in invoking the lambda function and since the sink is `exec.Command` this is vulnerable to remote code execution by design and can be easily escaped
+- When the `-json` flag is passed, it automatically outputs the json to disk and silents nuclei `"-o", "/tmp/output.json", "-silent"` so be sure not to specify output location and only `-json` is sufficient
+- Nuclei refuses to not write to `$HOME/.config` so the `HOME`, which is not a writable filesystem with lambda, is set to `/tmp` which can cause warm starts to have the same filesystem and perhaps poison future configurations
+
+
+## Lambda Usage
+
+```bash
+$ aws lambda invoke --payload $(echo '{"Command":"/opt/nuclei","Args":["-u","https://example.com","-t","dns","-json"]}' | base64) --function-name function-name-here output.json
+{
+    "StatusCode": 200,
+    "ExecutedVersion": "$LATEST"
+}
+$ cat output.json | jq '.output' --raw-output | jq '.[0]'
+{
+  "host": "example.com",
+  "info": {
+    "author": [
+      "pdteam"
+    ],
+    "classification": {
+      "cve-id": null,
+      "cwe-id": [
+        "cwe-200"
+      ]
+    },
+    "description": "Domain Name System Security Extensions (DNSSEC) are enabled. The Delegation of Signing (DS) record provides information about a signed zone file when DNSSEC enabled.",
+    "name": "DNSSEC Detection",
+    "reference": [
+      "https://www.icann.org/resources/pages/dnssec-what-is-it-why-important-2019-03-05-en",
+      "https://www.cyberciti.biz/faq/unix-linux-test-and-validate-dnssec-using-dig-command-line/"
+    ],
+    "severity": "info",
+    "tags": [
+      "dns",
+      "dnssec"
+    ]
+  },
+  "matched-at": "example.com",
+  "matched-line": null,
+  "matcher-status": true,
+  "template": "dns/dnssec-detection.yaml",
+  "template-id": "dnssec-detection",
+  "template-url": "https://github.com/projectdiscovery/nuclei-templates/blob/master/dns/dnssec-detection.yaml",
+  "timestamp": "2022-12-28T18:44:08.710845314Z",
+  "type": "dns"
+}
+```
+
+### Event Json
+
+```
+{
+  "Command": "/opt/nuclei",
+  "Args": [
+    "-u",
+    "https://devsecopsdocs.com",
+    "-t",
+    "technologies/aws/s3-detect.yaml",
+    "-json"
+  ]
+}
+```
 
 ## Nuclei Templates
 

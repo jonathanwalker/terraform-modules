@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"os"
 	"os/exec"
@@ -22,11 +23,14 @@ type Response struct {
 	Error  string `json:"error"`
 }
 
+// Lambda layer stores the nuclei binary in /opt/nuclei
+const nucleiBinary = "/opt/nuclei"
+
 func handler(ctx context.Context, event Event) (Response, error) {
 	// Check to see if you have Args and Command in the event
 	if event.Command == "" || len(event.Args) == 0 {
 		return Response{
-			Error: "command and args are required",
+			Error: "Nuclei requires a command and args to run. Please specify a command and args within the event. Example: {\"Command\": \"/opt/nuclei\", \"Args\": [\"-u\", \"https://example.com\"]}",
 		}, nil
 	}
 
@@ -45,7 +49,7 @@ func handler(ctx context.Context, event Event) (Response, error) {
 	os.Setenv("HOME", homePath)
 
 	// Run the nuclei binary with the command and args
-	cmd := exec.Command(event.Command, event.Args...)
+	cmd := exec.Command(nucleiBinary, event.Args...)
 	output, err := cmd.CombinedOutput()
 
 	// If the output was specified to json; read the file, parse the json, and return the findings
@@ -80,8 +84,10 @@ func handler(ctx context.Context, event Event) (Response, error) {
 	}
 
 	// Return the output of the command
+	// Convert output to base64
+	base64output := base64.StdEncoding.EncodeToString([]byte(output))
 	return Response{
-		Output: string(output),
+		Output: string(base64output),
 	}, nil
 }
 
