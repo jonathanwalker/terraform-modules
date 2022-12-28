@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"os"
 	"os/exec"
 
@@ -16,6 +15,7 @@ import (
 type Event struct {
 	Targets []string `json:"targets"`
 	Args    []string `json:"args"`
+	Output  string   `json:"output"`
 }
 
 // Response is the output response for the Lambda function.
@@ -35,17 +35,13 @@ func handler(ctx context.Context, event Event) (Response, error) {
 	os.Setenv("HOME", fileSystem)
 
 	// Check to see if you have Args and Command in the event
-	if len(event.Targets) == 0 || len(event.Args) == 0 {
+	if len(event.Targets) == 0 || len(event.Args) == 0 || event.Output == "" {
 		return Response{
-			Error: "Nuclei requires a targets and args to run. Please specify the target(s) and args within the event.",
+			Error: "Nuclei requires a targets, args, and output to run. Please specify the target(s), args, and output within the event.",
 		}, nil
 	}
 
-	// Print debugging
-	fmt.Println("Targets: ", event.Targets)
-	fmt.Println("Args: ", event.Args)
-	fmt.Println("Length of Targets: ", len(event.Targets))
-	// Check to see if the target is a single target or a list of targets
+	// Check to see if it is a single target or multiple
 	if len(event.Targets) == 1 {
 		// If it's a single target it prepends -u target to the args
 		event.Args = append([]string{"-u", event.Targets[0]}, event.Args...)
@@ -60,9 +56,7 @@ func handler(ctx context.Context, event Event) (Response, error) {
 		event.Args = append([]string{"-l", targetsFile}, event.Args...)
 	}
 
-	// Check to see if it contains -json, to write the file to disk and return the findings in json
-	jsonExport := false
-	if contains(event.Args, "-json") {
+	if event.Output == "json" {
 		event.Args = append(event.Args, "-o", scanOutput, "-silent")
 		// Attempt to delete the file if still warm
 		err := os.Remove(scanOutput)
@@ -71,14 +65,10 @@ func handler(ctx context.Context, event Event) (Response, error) {
 				Error: err.Error(),
 			}, nil
 		}
-		// Set jsonExport to true
-		jsonExport = true
 	}
 
 	// Run the nuclei binary with the command and args
 	cmd := exec.Command(nucleiBinary, event.Args...)
-	// Print the command to the console for debugging
-	fmt.Printf("%s %v\n", nucleiBinary, event.Args)
 	output, err := cmd.CombinedOutput()
 	base64output := base64.StdEncoding.EncodeToString([]byte(output))
 	if err != nil {
@@ -88,18 +78,11 @@ func handler(ctx context.Context, event Event) (Response, error) {
 		}, nil
 	}
 
-	// If the output was specified to json; read the file, parse the json, and return the findings
-	if jsonExport {
-		findings, err := jsonFindings()
-		// convert to json string
+	// Send the scan results to the sink
+	if event.Output == "json" {
+		findings, err := jsonFindings(scanOutput)
+		// convert it to json
 		jsonFindings, err := json.Marshal(findings)
-		if err != nil {
-			return Response{
-				Output: string(output),
-				Error:  err.Error(),
-			}, nil
-		}
-		// If there was an error return command line output
 		if err != nil {
 			return Response{
 				Output: string(output),
@@ -109,12 +92,16 @@ func handler(ctx context.Context, event Event) (Response, error) {
 		return Response{
 			Output: string(jsonFindings),
 		}, nil
+	} else if event.Output == "cmd" {
+		return Response{
+			Output: string(base64output),
+		}, nil
+	} else {
+		return Response{
+			Output: string(output),
+			Error:  "Output type not supported. Please specify json or cmd.",
+		}, nil
 	}
-
-	// Return the output of the successful command in base64
-	return Response{
-		Output: string(base64output),
-	}, nil
 }
 
 // Write targets to a file on disk and return filename
@@ -139,20 +126,13 @@ func writeTargets(targets []string) (string, error) {
 		}
 	}
 
-	// Print the contents of the file to the console for debugging
-	data, err := os.ReadFile(targetsFile)
-	if err != nil {
-		return "", err
-	}
-	fmt.Println(string(data))
-
 	// Return the filename
 	return targetsFile, nil
 }
 
 // jsonFindings reads the output.json file and returns the findings
-func jsonFindings() ([]interface{}, error) {
-	file, err := os.Open(scanOutput)
+func jsonFindings(scanOutputFile string) ([]interface{}, error) {
+	file, err := os.Open(scanOutputFile)
 	if err != nil {
 		return nil, err
 	}
