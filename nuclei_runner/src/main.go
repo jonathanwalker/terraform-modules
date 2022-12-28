@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/exec"
 
@@ -83,6 +84,7 @@ func handler(ctx context.Context, event Event) (Response, error) {
 				Error:  err.Error(),
 			}, nil
 		}
+		fmt.Println("Findings: ", jsonFindings)
 		return Response{
 			Output: string(jsonFindings),
 		}, nil
