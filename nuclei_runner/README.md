@@ -1,6 +1,6 @@
 # Nuclei Runner
 
-> :warning: **This is vulnerable to Remote Code Execution**: Be careful where you deploy this as I have made no attempt to sanitize inputs for flexibility purposes. Since it running in lambda and specified outputs, the risk is generally low but if you were to attach a network interface to this it could add significant risk. 
+> :warning: **This is vulnerable to Remote Code Execution**: Be careful where you deploy this as I have made no attempt to sanitize inputs for flexibility purposes. Since it running in lambda, the risk is generally low but if you were to attach a network interface to this it could add significant risk. 
 
 This terraform module allows you to execute [Nuclei](https://github.com/projectdiscovery/nuclei) within a [lambda function](https://aws.amazon.com/lambda/) within AWS. The purpose of which is to allow you to perform automated scans on your infrastructure and allow the results to be parsed in any way that you choose. 
 
