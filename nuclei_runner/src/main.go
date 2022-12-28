@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 
@@ -126,6 +128,10 @@ func writeTargets(targets []string) (string, error) {
 
 // jsonFindings reads the output.json file and returns the findings
 func jsonOutputFindings(scanOutputFile string) ([]interface{}, error) {
+	// Print the conents of the file for debugging
+	contents, err := ioutil.ReadFile(scanOutputFile)
+	fmt.Println(string(contents))
+
 	file, err := os.Open(scanOutputFile)
 	if err != nil {
 		return nil, err
