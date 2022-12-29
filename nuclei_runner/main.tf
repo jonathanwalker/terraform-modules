@@ -17,7 +17,6 @@ resource "aws_lambda_function" "function" {
 
   environment {
     variables = {
-      "AWS_REGION" = data.aws_region.current.name
       "AWS_BUCKET" = aws_s3_bucket.bucket.id
     }
   }
