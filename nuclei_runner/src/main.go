@@ -109,7 +109,7 @@ func handler(ctx context.Context, event Event) (Response, error) {
 		s3Key, err := writeAndUploadFindings(findings)
 		if err != nil {
 			return Response{
-				Output: string(output),
+				Output: string(s3Key),
 				Error:  err.Error(),
 			}, nil
 		}
