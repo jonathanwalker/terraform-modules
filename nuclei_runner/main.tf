@@ -1,3 +1,5 @@
+data "aws_region" "current" {}
+
 # tfsec:ignore:aws-lambda-enable-tracing
 resource "aws_lambda_function" "function" {
   filename      = "lambda.zip"
@@ -12,6 +14,13 @@ resource "aws_lambda_function" "function" {
   memory_size = var.memory_size
 
   source_code_hash = data.archive_file.zip.output_base64sha256
+
+  environment {
+    variables = {
+      "AWS_REGION" = data.aws_region.current.name
+      "AWS_BUCKET" = aws_s3_bucket.bucket.id
+    }
+  }
 
   tags = var.tags
 }
@@ -102,5 +111,16 @@ data "aws_iam_policy_document" "policy" {
     ]
 
     resources = ["arn:aws:logs:*:*:*"]
+  }
+
+  statement {
+    sid   = "AllowS3Upload"
+    effect = "Allow"
+    actions = [
+      "s3:PutObject"
+    ]
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.bucket.id}/findings/*"
+    ]
   }
 }

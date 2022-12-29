@@ -5,10 +5,16 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/google/uuid"
 )
 
 // Event is the input event for the Lambda function.
@@ -56,9 +62,9 @@ func handler(ctx context.Context, event Event) (Response, error) {
 		event.Args = append([]string{"-l", targetsFile}, event.Args...)
 	}
 
-	if event.Output == "json" {
+	// If the output is json or s3 then output as json
+	if event.Output == "json" || event.Output == "s3" {
 		event.Args = append(event.Args, "-json", "-o", scanOutput, "-silent")
-		os.Remove(scanOutput)
 	}
 
 	// Run the nuclei binary with the command and args
@@ -89,6 +95,28 @@ func handler(ctx context.Context, event Event) (Response, error) {
 	} else if event.Output == "cmd" {
 		return Response{
 			Output: string(base64output),
+		}, nil
+	} else if event.Output == "s3" {
+		// Read the findings as []interface{}
+		findings, err := jsonOutputFindings(scanOutput)
+		if err != nil {
+			return Response{
+				Output: string(output),
+				Error:  err.Error(),
+			}, nil
+		}
+		// Write the findings to a file and upload to s3
+		s3Key, err := writeAndUploadFindings(findings)
+		if err != nil {
+			return Response{
+				Output: string(output),
+				Error:  err.Error(),
+			}, nil
+		}
+
+		// Return the s3 key
+		return Response{
+			Output: s3Key,
 		}, nil
 	} else {
 		return Response{
@@ -152,6 +180,66 @@ func jsonOutputFindings(scanOutputFile string) ([]interface{}, error) {
 
 	// Return the findings
 	return findings, nil
+}
+
+// Takes in []interface{}, iterates through it, writes it to a file based on the date, and uploads it to S3
+func writeAndUploadFindings(findings []interface{}) (string, error) {
+	// Bucket and region
+	region := os.Getenv("AWS_REGION")
+	bucket := os.Getenv("BUCKET_NAME")
+	// Iterate through the interface and convert to a slice of strings for writing to a file
+	var s3Findings []string
+	for _, finding := range findings {
+		jsonFinding, err := json.Marshal(finding)
+		if err != nil {
+			return "failed to upload to s3", err
+		}
+		s3Findings = append(s3Findings, string(jsonFinding))
+	}
+
+	// Two variables for filename, must be unique on execution, and s3 key partitioned with findings/year/month/day/hour/nuclei-findings-<timestamp>.json
+	t := time.Now()
+	uuid := uuid.New()
+	s3Key := fmt.Sprintf("findings/%d/%d/%d/%d/nuclei-findings-%d.json", t.Year(), t.Month(), t.Day(), t.Hour(), uuid)
+	filename := fmt.Sprintf("nuclei-findings-%s.json", uuid)
+
+	// Write the findings to a file
+	file, err := os.Create(fileSystem + filename)
+	if err != nil {
+		return "Failed to write to filesystem", err
+	}
+	defer file.Close()
+
+	// Write the list to the file.
+	for _, finding := range s3Findings {
+		_, err := file.WriteString(finding + "\n")
+		if err != nil {
+			return "Failed to write json to file", err
+		}
+	}
+
+	// Upload the file to S3
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(region)},
+	)
+	if err != nil {
+		return "Failed to create session", err
+	}
+
+	// Create an uploader with the session and default options
+	uploader := s3manager.NewUploader(sess)
+
+	// Upload the file to S3.
+	result, err := uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(s3Key),
+		Body:   file,
+	})
+	if err != nil {
+		return "Failed to upload file", err
+	}
+
+	return aws.StringValue(&result.Location), nil
 }
 
 // Contains checks to see if a string is in a slice of strings
