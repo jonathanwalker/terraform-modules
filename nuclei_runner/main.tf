@@ -1,5 +1,3 @@
-data "aws_region" "current" {}
-
 # tfsec:ignore:aws-lambda-enable-tracing
 resource "aws_lambda_function" "function" {
   filename      = "lambda.zip"
