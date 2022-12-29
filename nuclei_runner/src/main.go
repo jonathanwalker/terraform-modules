@@ -229,6 +229,12 @@ func writeAndUploadFindings(findings []interface{}) (string, error) {
 	// Create an uploader with the session and default options
 	uploader := s3manager.NewUploader(sess)
 
+	// Open the file for use
+	file, err = os.Open(fileSystem + filename)
+	if err != nil {
+		return "Failed to open file", err
+	}
+
 	// Upload the file to S3.
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucket),
