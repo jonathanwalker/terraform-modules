@@ -15,7 +15,7 @@ resource "aws_lambda_function" "function" {
 
   environment {
     variables = {
-      "AWS_BUCKET" = aws_s3_bucket.bucket.id
+      "BUCKET_NAME" = aws_s3_bucket.bucket.id
     }
   }
 

@@ -109,7 +109,7 @@ func handler(ctx context.Context, event Event) (Response, error) {
 		s3Key, err := writeAndUploadFindings(findings)
 		if err != nil {
 			return Response{
-				Output: string(s3Key),
+				Output: string(output),
 				Error:  err.Error(),
 			}, nil
 		}
@@ -232,12 +232,6 @@ func writeAndUploadFindings(findings []interface{}) (string, error) {
 	findingsFile, err := os.Open(fileSystem + filename)
 	if err != nil {
 		return "Failed to open file", err
-	}
-
-	// Print the content of the file for debugging
-	scanner := bufio.NewScanner(findingsFile)
-	for scanner.Scan() {
-		fmt.Println(scanner.Text())
 	}
 
 	// Upload the file to S3.
