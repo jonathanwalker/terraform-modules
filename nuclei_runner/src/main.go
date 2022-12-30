@@ -200,7 +200,7 @@ func writeAndUploadFindings(findings []interface{}) (string, error) {
 	// Two variables for filename, must be unique on execution, and s3 key partitioned with findings/year/month/day/hour/nuclei-findings-<timestamp>.json
 	t := time.Now()
 	uuid := uuid.New().String()
-	s3Key := fmt.Sprintf("findings/%d/%d/%d/%d/nuclei-findings-%s.json", t.Year(), t.Month(), t.Day(), t.Hour(), uuid)
+	s3Key := fmt.Sprintf("findings/%d/%02d/%02d/%02d/nuclei-findings-%s.json", t.Year(), t.Month(), t.Day(), t.Hour(), uuid)
 	filename := fmt.Sprintf("nuclei-findings-%s.json", uuid)
 
 	// Write the findings to a file
