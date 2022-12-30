@@ -24,7 +24,7 @@ resource "aws_glue_catalog_table" "table" {
     }
     columns {
       name = "info"
-      type = "struct<author:array<string>,classification:string,description:string,name:string,reference:string,severity:string,tags:array<string>>"
+      type = "struct<author:array<string>,classification:string,description:string,name:string,reference:array<string>,severity:string,tags:array<string>>"
     }
     columns {
       name = "metadata"
