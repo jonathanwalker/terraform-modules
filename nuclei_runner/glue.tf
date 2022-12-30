@@ -78,7 +78,7 @@ resource "aws_glue_catalog_table" "table" {
     "projection.dt.format"        = "yyyy/MM/dd/HH"
     "projection.dt.interval"      = "1"
     "projection.dt.interval.unit" = "HOURS"
-    "projection.dt.range"         = "NOW-1YEARS,NOW"
+    "projection.dt.range"         = "NOW-1HOURS,NOW"
     "storage.location.template"   = "s3://${aws_s3_bucket.bucket.id}/findings/$${dt}"
   }
 }
