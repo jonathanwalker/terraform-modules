@@ -235,6 +235,12 @@ func writeAndUploadFindings(findings []interface{}) (string, error) {
 		return "Failed to open file", err
 	}
 
+	// Print the content of the file for debugging
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		fmt.Println(scanner.Text())
+	}
+
 	// Upload the file to S3.
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucket),
