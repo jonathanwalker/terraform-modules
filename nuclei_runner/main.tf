@@ -3,8 +3,8 @@ resource "aws_lambda_function" "function" {
   filename      = "lambda.zip"
   function_name = "${var.project_name}-function"
 
-  role          = aws_iam_role.lambda_role.arn
-  layers        = [aws_lambda_layer_version.layer.arn]
+  role   = aws_iam_role.lambda_role.arn
+  layers = [aws_lambda_layer_version.layer.arn]
 
   handler     = "main"
   runtime     = "go1.x"
@@ -31,10 +31,10 @@ resource "aws_lambda_alias" "alias" {
 
 # Layer to run nuclei in lambda
 resource "aws_lambda_layer_version" "layer" {
-  depends_on       = [aws_s3_object.upload_nuclei]
-  layer_name       = "${var.project_name}-layer"
-  s3_bucket        = aws_s3_bucket.bucket.id
-  s3_key           = "nuclei.zip"
+  depends_on          = [aws_s3_object.upload_nuclei]
+  layer_name          = "${var.project_name}-layer"
+  s3_bucket           = aws_s3_bucket.bucket.id
+  s3_key              = "nuclei.zip"
   compatible_runtimes = ["go1.x"]
 }
 
@@ -100,10 +100,10 @@ resource "aws_iam_policy" "policy" {
 # tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "policy" {
   statement {
-    sid     = "AllowCloudWatchLogs"
+    sid = "AllowCloudWatchLogs"
     actions = [
-      "logs:CreateLogGroup", 
-      "logs:CreateLogStream", 
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
 
@@ -111,7 +111,7 @@ data "aws_iam_policy_document" "policy" {
   }
 
   statement {
-    sid   = "AllowS3Upload"
+    sid    = "AllowS3Upload"
     effect = "Allow"
     actions = [
       "s3:PutObject"

@@ -19,12 +19,12 @@ variable "nuclei_args" {
 }
 
 variable "nuclei_timeout" {
-  type = number
+  type    = number
   default = 900
 }
 
 variable "memory_size" {
-  type = number
+  type    = number
   default = 512
 }
 

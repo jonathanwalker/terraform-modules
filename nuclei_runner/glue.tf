@@ -9,48 +9,48 @@ resource "aws_glue_catalog_table" "table" {
   table_type    = "EXTERNAL_TABLE"
 
   storage_descriptor {
-    location = "s3://jwalker-nuclei-runner-artifacts/findings/"
+    location = "s3://${aws_s3_bucket.bucket.id}/findings/"
 
-    input_format = "org.apache.hadoop.mapred.TextInputFormat"
+    input_format  = "org.apache.hadoop.mapred.TextInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat"
 
-    column {
+    columns {
       name = "extracted-results"
       type = "array<string>"
     }
-    column {
+    columns {
       name = "host"
       type = "string"
     }
-    column {
+    columns {
       name = "info"
       type = "struct<author:array<string>,classification:struct<cve-id:string,cwe-id:array<string>>,description:string,name:string,reference:array<string>,severity:string,tags:array<string>>"
     }
-    column {
+    columns {
       name = "matched-at"
       type = "string"
     }
-    column {
+    columns {
       name = "matched-line"
       type = "string"
     }
-    column {
+    columns {
       name = "matcher-status"
       type = "boolean"
     }
-    column {
+    columns {
       name = "template-id"
       type = "string"
     }
-    column {
+    columns {
       name = "timestamp"
       type = "timestamp"
     }
-    column {
+    columns {
       name = "type"
       type = "string"
     }
-    column {
+    columns {
       name = "matcher-name"
       type = "string"
     }
@@ -69,15 +69,15 @@ resource "aws_glue_catalog_table" "table" {
   }
 
   parameters = {
-    "EXTERNAL" = "TRUE"
-    "compressionType" = "none"
-    "classification" = "json"
-    "typeOfData" = "file"
-    "projection.enabled" = "true"
-    "projection.dt.type" = "date"
-    "projection.dt.format" = "yyyy/MM/dd/HH"
-    "projection.dt.interval" = "1"
+    "EXTERNAL"                    = "TRUE"
+    "compressionType"             = "none"
+    "classification"              = "json"
+    "typeOfData"                  = "file"
+    "projection.enabled"          = "true"
+    "projection.dt.type"          = "date"
+    "projection.dt.format"        = "yyyy/MM/dd/HH"
+    "projection.dt.interval"      = "1"
     "projection.dt.interval.unit" = "HOURS"
-    "projection.dt.range" = "NOW-1YEARS,NOW"
+    "projection.dt.range"         = "NOW-1YEARS,NOW"
   }
 }
