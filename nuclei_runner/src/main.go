@@ -114,6 +114,12 @@ func handler(ctx context.Context, event Event) (Response, error) {
 			}, nil
 		}
 
+		if s3Key == "No findings" {
+			return Response{
+				Output: "No findings, better luck next time!",
+			}, nil
+		}
+
 		// Return the s3 key
 		return Response{
 			Output: s3Key,
@@ -195,6 +201,10 @@ func writeAndUploadFindings(findings []interface{}) (string, error) {
 			return "failed to upload to s3", err
 		}
 		s3Findings = append(s3Findings, string(jsonFinding))
+	}
+
+	if len(s3Findings) == 0 {
+		return "No findings", nil
 	}
 
 	// Two variables for filename, must be unique on execution, and s3 key partitioned with findings/year/month/day/hour/nuclei-findings-<timestamp>.json
