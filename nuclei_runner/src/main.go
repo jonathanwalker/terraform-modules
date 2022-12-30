@@ -199,8 +199,8 @@ func writeAndUploadFindings(findings []interface{}) (string, error) {
 
 	// Two variables for filename, must be unique on execution, and s3 key partitioned with findings/year/month/day/hour/nuclei-findings-<timestamp>.json
 	t := time.Now()
-	uuid := uuid.New()
-	s3Key := fmt.Sprintf("findings/%d/%d/%d/%d/nuclei-findings-%d.json", t.Year(), t.Month(), t.Day(), t.Hour(), uuid)
+	uuid := uuid.New().String()
+	s3Key := fmt.Sprintf("findings/%d/%d/%d/%d/nuclei-findings-%s.json", t.Year(), t.Month(), t.Day(), t.Hour(), uuid)
 	filename := fmt.Sprintf("nuclei-findings-%s.json", uuid)
 
 	// Write the findings to a file
@@ -235,7 +235,7 @@ func writeAndUploadFindings(findings []interface{}) (string, error) {
 	}
 
 	// Upload the file to S3.
-	result, err := uploader.Upload(&s3manager.UploadInput{
+	_, err = uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(s3Key),
 		Body:   findingsFile,
@@ -244,7 +244,11 @@ func writeAndUploadFindings(findings []interface{}) (string, error) {
 		return "Failed to upload file", err
 	}
 
-	return aws.StringValue(&result.Location), nil
+	// S3 path for the file
+	s3uri := fmt.Sprintf("s3://%s/%s", bucket, s3Key)
+
+	// Return the s3 uri after uploading
+	return s3uri, nil
 }
 
 // Contains checks to see if a string is in a slice of strings
