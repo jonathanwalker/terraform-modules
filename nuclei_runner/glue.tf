@@ -24,7 +24,11 @@ resource "aws_glue_catalog_table" "table" {
     }
     columns {
       name = "info"
-      type = "struct<author:array<string>,classification:struct<cve-id:string,cwe-id:array<string>>,description:string,name:string,reference:array<string>,severity:string,tags:array<string>>"
+      type = "struct<author:array<string>,classification:<string>,description:string,name:string,reference:array<string>,severity:string,tags:array<string>>"
+    }
+    columns {
+      name = "metadata"
+      type = "struct<shodan-query:string,verified:string>"
     }
     columns {
       name = "matched-at"
@@ -54,11 +58,28 @@ resource "aws_glue_catalog_table" "table" {
       name = "matcher-name"
       type = "string"
     }
+    columns {
+      name = "curl-command"
+      type = "string"
+    }
+    columns {
+      name = "curl-command"
+      type = "ip"
+    }
+    columns {
+      name = "template-url"
+      type = "string"
+    }
+    columns {
+      name = "template"
+      type = "string"
+    }
 
     ser_de_info {
       serialization_library = "org.openx.data.jsonserde.JsonSerDe"
       parameters = {
         "serialization.format" = "1"
+        "serialization.null.format" = "null"
       }
     }
   }
