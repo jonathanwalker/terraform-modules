@@ -63,8 +63,8 @@ resource "aws_glue_catalog_table" "table" {
       type = "string"
     }
     columns {
-      name = "curl-command"
-      type = "ip"
+      name = "ip"
+      type = "string"
     }
     columns {
       name = "template-url"
