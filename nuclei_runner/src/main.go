@@ -2,10 +2,12 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"time"
@@ -230,22 +232,22 @@ func writeAndUploadFindings(findings []interface{}) (string, error) {
 	uploader := s3manager.NewUploader(sess)
 
 	// Open the file for use
-	file, err = os.Open(fileSystem + filename)
+	body, err := ioutil.ReadFile(fileSystem + filename)
 	if err != nil {
-		return "Failed to open file", err
+		return "Failed to read file", err
 	}
 
 	// Print the content of the file for debugging
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		fmt.Println(scanner.Text())
-	}
+	// scanner := bufio.NewScanner(file)
+	// for scanner.Scan() {
+	// 	fmt.Println(scanner.Text())
+	// }
 
 	// Upload the file to S3.
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(s3Key),
-		Body:   file,
+		Body:   bytes.NewReader(body),
 	})
 	if err != nil {
 		return "Failed to upload file", err
