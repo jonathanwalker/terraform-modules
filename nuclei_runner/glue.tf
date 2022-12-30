@@ -36,7 +36,7 @@ resource "aws_glue_catalog_table" "table" {
     }
     columns {
       name = "matcher-status"
-      type = "boolean"
+      type = "string"
     }
     columns {
       name = "template-id"
@@ -44,7 +44,7 @@ resource "aws_glue_catalog_table" "table" {
     }
     columns {
       name = "timestamp"
-      type = "timestamp"
+      type = "string"
     }
     columns {
       name = "type"
