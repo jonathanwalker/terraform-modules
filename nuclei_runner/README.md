@@ -1,14 +1,12 @@
 # Nuclei Runner
 
-> :warning: **This is vulnerable to Remote Code Execution**: Be careful where you deploy this as I have made no attempt to sanitize inputs for flexibility purposes. Since it is running in lambda, the risk is generally low but if you were to attach a network interface to this it could add significant risk. 
+![Infrastructure](/static/infrastructure.png)
 
-This terraform module allows you to execute [Nuclei](https://github.com/projectdiscovery/nuclei) within a [lambda function](https://aws.amazon.com/lambda/) within AWS. The purpose of which is to allow you to perform automated scans on your infrastructure and allow the results to be parsed in any way that you choose. 
+This terraform module allows you to execute [Nuclei](https://github.com/projectdiscovery/nuclei) within a [lambda function](https://aws.amazon.com/lambda/) within AWS. This is designed to be the backend for [Nuclear Pond](https://github.com/DevSecOpsDocs/Nuclear-Pond). Please go to that repository first if you have not. The purpose of which is to allow you to perform automated scans on your infrastructure and allow the results to be parsed in any way that you choose. 
 
 Nuclei can help you identify technologies running within your infrastructure, misconfigurations, exploitable vulnerabilities, network protocols, default credentials, exposed panels, takeovers, and so much more. Continuously monitoring for such vulnerabilities within your network can be crucial to providing you with a last line of defense against vulnerabilities hidden within your cloud infrastructure. 
 
-## Purpose
-
-The purpose of this module is to allow you to execute nuclei through lambda invocations and get the results in a reasonable location. 
+> :warning: **This is vulnerable to Remote Code Execution**: Be careful where you deploy this as I have made no attempt to sanitize inputs for flexibility purposes. Since it is running in lambda, the risk is generally low but if you were to attach a network interface to this it could add significant risk. 
 
 ## Engineering Decisions
 
@@ -18,50 +16,6 @@ With any engineering project, design decisions are made based on the requirement
 - Never pass `-u`, `-l`, `-json`, or `-o` flag to this lambda function but you can pass any other nuclei arguments you like
 - Nuclei refuses to not write to `$HOME/.config` so the `HOME`, which is not a writable filesystem with lambda, is set to `/tmp` which can cause warm starts to have the same filesystem and perhaps poison future configurations
 - Lambda function in golang is rebuilt on every apply for ease of development
-
-## Lambda Usage
-
-```bash
-$ aws lambda invoke --payload $(echo '{"Targets":["https://example.com"],"Args":["-t","dns"],"Output":"json"}' | base64) --function-name function-name-here output.json
-{
-    "StatusCode": 200,
-    "ExecutedVersion": "$LATEST"
-}
-$ cat output.json | jq '.output' --raw-output | jq '.[0]'
-{
-  "host": "example.com",
-  "info": {
-    "author": [
-      "pdteam"
-    ],
-    "classification": {
-      "cve-id": null,
-      "cwe-id": [
-        "cwe-200"
-      ]
-    },
-    "description": "Domain Name System Security Extensions (DNSSEC) are enabled. The Delegation of Signing (DS) record provides information about a signed zone file when DNSSEC enabled.",
-    "name": "DNSSEC Detection",
-    "reference": [
-      "https://www.icann.org/resources/pages/dnssec-what-is-it-why-important-2019-03-05-en",
-      "https://www.cyberciti.biz/faq/unix-linux-test-and-validate-dnssec-using-dig-command-line/"
-    ],
-    "severity": "info",
-    "tags": [
-      "dns",
-      "dnssec"
-    ]
-  },
-  "matched-at": "example.com",
-  "matched-line": null,
-  "matcher-status": true,
-  "template": "dns/dnssec-detection.yaml",
-  "template-id": "dnssec-detection",
-  "template-url": "https://github.com/projectdiscovery/nuclei-templates/blob/master/dns/dnssec-detection.yaml",
-  "timestamp": "2022-12-28T18:44:08.710845314Z",
-  "type": "dns"
-}
-```
 
 ### Event Json
 
@@ -78,75 +32,6 @@ This is what must be passed to the lambda function. The `Targets` can be a list 
   ],
   "Output": "json"
 }
-```
-
-## Nuclei Templates
-
-[ProjectDiscovery](https://projectdiscovery.io) maintains the repository [nuclei-templates](https://github.com/projectdiscovery/nuclei-templates) which contains various templates for the nuclei scanner provided by them and the community. Contributions are welcome and straight forward to add to based on previous examples and you can reference my [pull request](https://github.com/projectdiscovery/nuclei-templates/pull/6440) to get a sense of just how easy it is. 
-
-## Nuclei Usage
-
-This is to help you understand how nuclei can be used to your advantage and help you understand what nuclei can catch buried within your infrastructure. 
-
-- Subdomain takeovers
-- Enumerate network services
-- Misconfigurations
-- Panels(Jenkins, Grafana, Kibana, etc.)
-- Default credentials
-- Vulnerabilities
-- Exposures(Backups, logs, files, configs, etc.)
-
-
-## Network
-
-Here is an example in which we want to enumerate some protocols running on [scanme.nmap.org](http://scanme.nmap.org) with the [network detection templates](https://github.com/projectdiscovery/nuclei-templates/tree/main/network/detection). This will help us identify network services running on the specified host. This allows us to currently check over 40 different network based services such as ssh, smtp, mysql, mongodb, telnet, etc. 
-
-```log
-$ nuclei -u scanme.nmap.org -t network/detection
-
-                     __     _
-   ____  __  _______/ /__  (_)
-  / __ \/ / / / ___/ / _ \/ /
- / / / / /_/ / /__/ /  __/ /
-/_/ /_/\__,_/\___/_/\___/_/   v2.8.3
-
-		projectdiscovery.io
-
-[ERR] Could not parse nuclei-ignore file: EOF
-[INF] Using Nuclei Engine 2.8.3 (latest)
-[INF] Using Nuclei Templates 9.3.2 (latest)
-[INF] Templates added in last update: 57
-[INF] Templates loaded for scan: 42
-[INF] Targets loaded for scan: 1
-[openssh-detect] [network] [info] scanme.nmap.org:22 [SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2.13]
-```
-
-## Takeovers
-
-Takeovers can be a common occurrence when you manage thousands of zones within your infrastructure and mistakes certainly occur in which deprecating assets may not complete in the correct order or completely. This can lead to dangling assets that can be taken over by an attacker. The repository [Can I take over XYZ](https://github.com/EdOverflow/can-i-take-over-xyz) is an excellent resource if you want to learn what the current landscape looks like at this time. 
-
-Nuclei currently has over 70 different templates to detect if you are currently vulnerable to a takeover and here is an example as to how check to see if a domain is vulnerable. 
-
-
-```log
-$ nuclei -u https://this-bucket-does-not-exist-1234.s3.amazonaws.com/ -tags takeover
-
-                     __     _
-   ____  __  _______/ /__  (_)
-  / __ \/ / / / ___/ / _ \/ /
- / / / / /_/ / /__/ /  __/ /
-/_/ /_/\__,_/\___/_/\___/_/   v2.8.3
-
-		projectdiscovery.io
-
-[ERR] Could not parse nuclei-ignore file: EOF
-[INF] Using Nuclei Engine 2.8.3 (latest)
-[INF] Using Nuclei Templates 9.3.2 (latest)
-[INF] Templates added in last update: 57
-[INF] Templates loaded for scan: 74
-[INF] Targets loaded for scan: 1
-[INF] Templates clustered: 69 (Reduced 68 HTTP Requests)
-[aws-bucket-takeover] [http] [high] https://this-bucket-does-not-exist-1234.s3.amazonaws.com/
 ```
 
 <!-- BEGIN_TF_DOCS -->
