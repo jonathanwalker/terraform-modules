@@ -16,6 +16,7 @@ resource "aws_api_gateway_method" "method" {
   resource_id = aws_api_gateway_resource.resource.id
   http_method = "ANY"
   authorization = "NONE"
+  api_key_required = false
 }
 
 resource "aws_api_gateway_integration" "integration" {
@@ -31,15 +32,6 @@ resource "aws_api_gateway_integration" "integration" {
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = aws_api_gateway_rest_api.gateway.id
   stage_name = "prod"
-
-  method_settings {
-    resource_path = "/*"
-    http_method   = "ANY"
-
-    settings {
-      api_key_required = false
-    }
-  }
 
   depends_on = [aws_api_gateway_integration.integration]
 }
