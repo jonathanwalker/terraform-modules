@@ -1,11 +1,19 @@
-variable "nuclei_version" {
-  description = "Nuclei version to use"
-  default     = "2.8.3"
+# variable "nuclei_version" {
+#   description = "Nuclei version to use"
+#   default     = "2.8.3"
+# }
+
+# variable "nuclei_arch" {
+#   description = "Nuclei architecture to use"
+#   default     = "linux_amd64"
+# }
+
+variable "domain" {
+  default = "api.devsecopsdocs.com"
 }
 
-variable "nuclei_arch" {
-  description = "Nuclei architecture to use"
-  default     = "linux_amd64"
+variable "zone_id" {
+  default = "Z3E2SVHCIAIP7Z"
 }
 
 variable "project_name" {
@@ -13,7 +21,7 @@ variable "project_name" {
   default     = "nuclei-scanner"
 }
 
-variable "nuclei_timeout" {
+variable "timeout" {
   type    = number
   default = 900
 }

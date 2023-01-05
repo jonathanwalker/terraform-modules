@@ -8,16 +8,22 @@ resource "aws_lambda_function" "function" {
 
   handler     = "main"
   runtime     = "go1.x"
-  timeout     = var.nuclei_timeout
+  timeout     = var.timeout
   memory_size = var.memory_size
 
   source_code_hash = data.archive_file.zip.output_base64sha256
 
   environment {
     variables = {
-      "BUCKET_NAME" = aws_s3_bucket.bucket.id
+      AWS_LAMBDA_FUNCTION_CONNECTION_REUSE_ENABLED = "false"
     }
   }
+
+  # environment {
+  #   variables = {
+  #     "BUCKET_NAME" = aws_s3_bucket.bucket.id
+  #   }
+  # }
 
   tags = var.tags
 }
@@ -30,13 +36,13 @@ resource "aws_lambda_alias" "alias" {
 }
 
 # Layer to run nuclei in lambda
-resource "aws_lambda_layer_version" "layer" {
-  depends_on          = [aws_s3_object.upload_nuclei]
-  layer_name          = "${var.project_name}-layer"
-  s3_bucket           = aws_s3_bucket.bucket.id
-  s3_key              = "nuclei.zip"
-  compatible_runtimes = ["go1.x"]
-}
+# resource "aws_lambda_layer_version" "layer" {
+#   depends_on          = [aws_s3_object.upload_nuclei]
+#   layer_name          = "${var.project_name}-layer"
+#   s3_bucket           = aws_s3_bucket.bucket.id
+#   s3_key              = "nuclei.zip"
+#   compatible_runtimes = ["go1.x"]
+# }
 
 # tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "log_group" {
@@ -96,14 +102,14 @@ data "aws_iam_policy_document" "policy" {
     resources = ["arn:aws:logs:*:*:*"]
   }
 
-  statement {
-    sid    = "AllowS3Upload"
-    effect = "Allow"
-    actions = [
-      "s3:PutObject"
-    ]
-    resources = [
-      "arn:aws:s3:::${aws_s3_bucket.bucket.id}/findings/*"
-    ]
-  }
+  # statement {
+  #   sid    = "AllowS3Upload"
+  #   effect = "Allow"
+  #   actions = [
+  #     "s3:PutObject"
+  #   ]
+  #   resources = [
+  #     "arn:aws:s3:::${aws_s3_bucket.bucket.id}/findings/*"
+  #   ]
+  # }
 }
