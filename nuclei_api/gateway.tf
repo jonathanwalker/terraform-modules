@@ -68,7 +68,7 @@ resource "aws_route53_record" "record_validation" {
   zone_id         = var.zone_id
 }
 
-resource "aws_acm_certificate_validation" "example" {
+resource "aws_acm_certificate_validation" "validation" {
   certificate_arn         = aws_acm_certificate.certificate.arn
   validation_record_fqdns = [for record in aws_route53_record.record_validation : record.fqdn]
 }
