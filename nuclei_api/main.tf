@@ -35,6 +35,16 @@ resource "aws_lambda_alias" "alias" {
   function_version = "$LATEST"
 }
 
+# lambda permission to invoke from api gateway
+resource "aws_lambda_permission" "permission" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.function.arn
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = aws_api_gateway_deployment.deployment.execution_arn
+}
+
 # Layer to run nuclei in lambda
 # resource "aws_lambda_layer_version" "layer" {
 #   depends_on          = [aws_s3_object.upload_nuclei]
