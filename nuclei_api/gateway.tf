@@ -45,7 +45,7 @@ resource "aws_api_gateway_domain_name" "domain" {
 }
 
 resource "aws_acm_certificate" "certificate" {
-  domain_name       = var.domain_name
+  domain_name       = var.domain
   validation_method = "DNS"
 
   tags = var.tags
