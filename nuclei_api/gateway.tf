@@ -69,6 +69,7 @@ resource "aws_route53_record" "record_validation" {
 }
 
 resource "aws_acm_certificate_validation" "validation" {
+  depends_on = [aws_route53_record.record_validation]
   certificate_arn         = aws_acm_certificate.certificate.arn
   validation_record_fqdns = [for record in aws_route53_record.record_validation : record.fqdn]
 }
