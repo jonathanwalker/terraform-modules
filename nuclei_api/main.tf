@@ -6,7 +6,7 @@ resource "aws_lambda_function" "function" {
   role   = aws_iam_role.lambda_role.arn
   # layers = [aws_lambda_layer_version.layer.arn]
 
-  handler     = "main"
+  handler     = "handler"
   runtime     = "go1.x"
   timeout     = var.timeout
   memory_size = var.memory_size
