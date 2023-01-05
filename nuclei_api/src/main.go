@@ -1,36 +1,25 @@
 package main
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
-	"log"
-	"net/http"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-type request struct {
-	Name string `json:"name"`
+func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	fmt.Printf("Processing request data for request %s.\n", request.RequestContext.RequestID)
+	fmt.Printf("Body size = %d.\n", len(request.Body))
+
+	fmt.Println("Headers:")
+	for key, value := range request.Headers {
+		fmt.Printf("    %s: %s\n", key, value)
+	}
+
+	return events.APIGatewayProxyResponse{Body: request.Body, StatusCode: 200}, nil
 }
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		var req request
-		err := json.NewDecoder(r.Body).Decode(&req)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		res, err := json.Marshal(map[string]string{
-			"message": fmt.Sprintf("Hello %s", req.Name),
-		})
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(res)
-	})
-
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	lambda.Start(handleRequest)
 }
