@@ -41,7 +41,6 @@ resource "aws_route53_record" "record" {
   zone_id = var.zone_id
   alias {
     name = aws_api_gateway_rest_api.gateway.execution_arn
-    zone_id = aws_api_gateway_rest_api.gateway.regional_domain_name
     evaluate_target_health = false
   }
 }
