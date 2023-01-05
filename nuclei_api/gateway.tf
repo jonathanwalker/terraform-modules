@@ -37,7 +37,7 @@ resource "aws_api_gateway_deployment" "deployment" {
 
 resource "aws_api_gateway_domain_name" "domain" {
   domain_name              = "api.example.com"
-  regional_certificate_arn = aws_acm_certificate_validation.example.certificate_arn
+  regional_certificate_arn = aws_acm_certificate_validation.certificate.certificate_arn
 
   endpoint_configuration {
     types = ["REGIONAL"]
