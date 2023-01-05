@@ -1,4 +1,3 @@
-# current region
 data "aws_region" "current" {}
 
 resource "aws_api_gateway_rest_api" "gateway" {
@@ -24,7 +23,7 @@ resource "aws_api_gateway_integration" "integration" {
   http_method = aws_api_gateway_method.method.http_method
 
   type = "AWS_PROXY"
-  integration_http_method = "ANY"
+  integration_http_method = "POST"
   uri = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.function.arn}/invocations"
 }
 
