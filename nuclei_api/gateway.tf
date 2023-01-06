@@ -43,15 +43,9 @@ resource "aws_api_gateway_domain_name" "domain" {
   }
 }
 
-resource "aws_api_gateway_stage" "stage" {
-  deployment_id = aws_api_gateway_deployment.deployment.id
-  rest_api_id   = aws_api_gateway_rest_api.gateway.id
-  stage_name    = "prod"
-}
-
 resource "aws_api_gateway_base_path_mapping" "example" {
   api_id      = aws_api_gateway_rest_api.gateway.id
-  stage_name  = aws_api_gateway_stage.stage.stage_name
+  stage_name  = "prod"
   domain_name = aws_api_gateway_domain_name.domain.domain_name
 }
 
