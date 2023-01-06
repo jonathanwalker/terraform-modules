@@ -7,7 +7,7 @@ resource "aws_api_gateway_rest_api" "gateway" {
 resource "aws_api_gateway_resource" "resource" {
   rest_api_id = aws_api_gateway_rest_api.gateway.id
   parent_id = aws_api_gateway_rest_api.gateway.root_resource_id
-  path_part = "resource"
+  path_part = "{proxy+}"
 }
 
 resource "aws_api_gateway_method" "method" {
