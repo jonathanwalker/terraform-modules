@@ -32,9 +32,18 @@ resource "aws_lambda_alias" "alias" {
 # Layer to run nuclei in lambda
 resource "aws_lambda_layer_version" "layer" {
   depends_on          = [aws_s3_object.upload_nuclei]
-  layer_name          = "${var.project_name}-layer"
+  layer_name          = "${var.project_name}-nuclei-layer"
   s3_bucket           = aws_s3_bucket.bucket.id
   s3_key              = "nuclei.zip"
+  compatible_runtimes = ["go1.x"]
+}
+
+# Layer to have nuclei templates
+resource "aws_lambda_layer_version" "layer" {
+  depends_on          = [aws_s3_object.upload_templates]
+  layer_name          = "${var.project_name}-nuclei-templates-layer"
+  s3_bucket           = aws_s3_bucket.bucket.id
+  s3_key              = "nuclei-templates.zip"
   compatible_runtimes = ["go1.x"]
 }
 
