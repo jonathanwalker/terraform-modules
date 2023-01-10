@@ -71,9 +71,9 @@ func handler(ctx context.Context, event Event) (Response, error) {
 
 	// Run the nuclei binary with the command and args
 	output, err := runNuclei(event.Args)
+	base64output := base64.StdEncoding.EncodeToString([]byte(output))
 	if err != nil {
 		// Return output as base64 to display in the console
-		base64output := base64.StdEncoding.EncodeToString([]byte(output))
 		return Response{
 			Output: string(base64output),
 			Error:  err.Error(),
