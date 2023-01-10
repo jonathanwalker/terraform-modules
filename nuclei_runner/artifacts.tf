@@ -9,6 +9,17 @@ resource "null_resource" "download-nuclei" {
   }
 }
 
+# Download nuclei templates
+resource "null_resource" "download-templates" {
+  triggers = {
+    version = var.nuclei_templates_version
+  }
+
+  provisioner "local-exec" {
+    command = "curl -o ${path.module}/src/nuclei-templates.zip -L https://github.com/projectdiscovery/nuclei-templates/archive/refs/tags/v${var.nuclei_templates_version}.zip"
+  }
+}
+
 resource "aws_s3_object" "upload_nuclei" {
   bucket = aws_s3_bucket.bucket.id
   key    = "nuclei.zip"
@@ -26,17 +37,6 @@ resource "aws_s3_object" "upload_config" {
   bucket = aws_s3_bucket.bucket.id
   key    = "report-config.zip"
   source = "${path.module}/report-config.zip"
-}
-
-# Download nuclei templates
-resource "null_resource" "download_templates" {
-  triggers = {
-    version = var.nuclei_templates_version
-  }
-
-  provisioner "local-exec" {
-    command = "curl -o ${path.module}/src/nuclei-templates.zip -L https://github.com/projectdiscovery/nuclei-templates/archive/refs/tags/v${var.nuclei_templates_version}.zip"
-  }
 }
 
 resource "aws_s3_object" "upload_templates" {
