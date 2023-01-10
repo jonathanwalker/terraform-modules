@@ -1,5 +1,5 @@
 # Download nuclei binary
-resource "null_resource" "download-nuclei" {
+resource "null_resource" "download_nuclei" {
   triggers = {
     version = var.nuclei_version
   }
@@ -10,7 +10,7 @@ resource "null_resource" "download-nuclei" {
 }
 
 # Download nuclei templates
-resource "null_resource" "download-templates" {
+resource "null_resource" "download_templates" {
   triggers = {
     version = var.nuclei_templates_version
   }
