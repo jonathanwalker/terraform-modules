@@ -1,6 +1,19 @@
+variable "project_name" {
+  description = "Name of the project to create and must be unique as S3 bucket names are global"
+}
+
+# You should check the latest version of Nuclei
+# https://github.com/projectdiscovery/nuclei/releases/
 variable "nuclei_version" {
   description = "Nuclei version to use"
-  default     = "2.8.3"
+  default     = "2.8.6"
+}
+
+# You should check for the latest version of nuclei-templates
+# https://github.com/projectdiscovery/nuclei-templates/releases/
+variable "nuclei_templates_version" {
+  description = "Nuclei templates version to use"
+  default     = "9.3.4"
 }
 
 variable "nuclei_arch" {
@@ -8,18 +21,9 @@ variable "nuclei_arch" {
   default     = "linux_amd64"
 }
 
-variable "project_name" {
-  description = "Name of the project"
-  default     = "nuclei-scanner"
-}
-
-variable "nuclei_args" {
-  type    = list(string)
-  default = ["-u", "https://devsecopsdocs.com", "-ud", "/tmp/", "-rc", "/opt/report-config.yaml", "-t", "technologies/aws", "-stats", "-c", "50", "-rl", "300", "-timeout", "5"]
-}
-
 variable "nuclei_timeout" {
   type    = number
+  description = "Lambda function timeout"
   default = 900
 }
 
@@ -32,6 +36,5 @@ variable "tags" {
   type = map(string)
   default = {
     "Name"  = "nuclei-scanner"
-    "Owner" = "johnny"
   }
 }
