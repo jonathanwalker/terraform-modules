@@ -1,4 +1,4 @@
-# Download nuclei binary
+# Download nuclei binary and templates
 resource "null_resource" "download_nuclei" {
   triggers = {
     version = var.nuclei_version
@@ -9,7 +9,6 @@ resource "null_resource" "download_nuclei" {
   }
 }
 
-# Download nuclei templates
 resource "null_resource" "download_templates" {
   triggers = {
     version = var.nuclei_templates_version
@@ -20,11 +19,23 @@ resource "null_resource" "download_templates" {
   }
 }
 
+# Upload them to s3
 resource "aws_s3_object" "upload_nuclei" {
+  depends_on = [null_resource.download_nuclei]
+
   bucket = aws_s3_bucket.bucket.id
   key    = "nuclei.zip"
   source = "${path.module}/src/nuclei.zip"
 }
+
+resource "aws_s3_object" "upload_templates" {
+  depends_on = [null_resource.download_templates]
+
+  bucket = aws_s3_bucket.bucket.id
+  key    = "nuclei-templates.zip"
+  source = "${path.module}/src/nuclei-templates.zip"
+}
+
 
 # Nuclei Config File `-config /opt/nuclei-config.yaml`
 data "archive_file" "report_config" {
@@ -37,13 +48,6 @@ resource "aws_s3_object" "upload_config" {
   bucket = aws_s3_bucket.bucket.id
   key    = "report-config.zip"
   source = "${path.module}/report-config.zip"
-}
-
-resource "aws_s3_object" "upload_templates" {
-  depends_on = [null_resource.download_templates]
-  bucket = aws_s3_bucket.bucket.id
-  key    = "nuclei-templates.zip"
-  source = "${path.module}/src/nuclei-templates.zip"
 }
 
 # Build the lambda function to execute binary
