@@ -9,11 +9,11 @@ variable "nuclei_version" {
   default     = "2.8.6"
 }
 
-# You should check for the latest version of nuclei-templates
-# https://github.com/projectdiscovery/nuclei-templates/releases/
-variable "nuclei_templates_version" {
-  description = "Nuclei templates version to use"
-  default     = "9.3.4"
+# You can also use private templates by download zip of your repo, copy url from downloaded file, and paste the url in here including the token
+variable "nuclei_templates_url" {
+  description = "Nuclei templates url to use"
+  sensitive   = true
+  default     = "https://github.com/projectdiscovery/nuclei-templates/archive/refs/tags/v9.3.4.zip"
 }
 
 variable "nuclei_arch" {
