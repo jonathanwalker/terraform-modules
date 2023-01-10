@@ -39,7 +39,7 @@ resource "aws_lambda_layer_version" "layer" {
 }
 
 # Layer to have nuclei templates
-resource "aws_lambda_layer_version" "layer" {
+resource "aws_lambda_layer_version" "templates_layer" {
   depends_on          = [aws_s3_object.upload_templates]
   layer_name          = "${var.project_name}-nuclei-templates-layer"
   s3_bucket           = aws_s3_bucket.bucket.id
