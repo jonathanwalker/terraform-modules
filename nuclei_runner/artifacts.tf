@@ -40,6 +40,7 @@ resource "null_resource" "download_templates" {
 }
 
 resource "aws_s3_object" "upload_templates" {
+  depends_on = [null_resource.download_templates]
   bucket = aws_s3_bucket.bucket.id
   key    = "nuclei-templates.zip"
   source = "${path.module}/src/nuclei-templates.zip"
