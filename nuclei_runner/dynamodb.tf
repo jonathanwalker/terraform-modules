@@ -10,7 +10,7 @@ resource "aws_dynamodb_table" "scan_state_table" {
     name = "ttl"
     type = "N"
   }
-  # add ttl
+  ttl = ["ttl_timestamp"]
   ttl {
     attribute_name = "ttl"
     enabled        = true
