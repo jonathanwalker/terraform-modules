@@ -11,4 +11,6 @@ resource "aws_dynamodb_table" "scan_state_table" {
     attribute_name = "ttl"
     enabled        = true
   }
+
+  tags = var.tags
 }
