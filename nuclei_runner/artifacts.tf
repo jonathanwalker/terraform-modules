@@ -11,11 +11,11 @@ resource "null_resource" "download_nuclei" {
 
 resource "null_resource" "download_templates" {
   triggers = {
-    version = var.nuclei_templates_version
+    version = var.nuclei_templates_url
   }
 
   provisioner "local-exec" {
-    command = "curl -o ${path.module}/src/nuclei-templates.zip -L https://github.com/projectdiscovery/nuclei-templates/archive/refs/tags/v${var.nuclei_templates_version}.zip"
+    command = "curl -o ${path.module}/src/nuclei-templates.zip -L ${var.nuclei_templates_url}"
   }
 }
 
