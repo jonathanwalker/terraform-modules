@@ -22,9 +22,9 @@ variable "nuclei_arch" {
 }
 
 variable "nuclei_timeout" {
-  type    = number
+  type        = number
   description = "Lambda function timeout"
-  default = 900
+  default     = 900
 }
 
 variable "memory_size" {
@@ -35,6 +35,6 @@ variable "memory_size" {
 variable "tags" {
   type = map(string)
   default = {
-    "Name"  = "nuclei-scanner"
+    "Name" = "nuclei-scanner"
   }
 }

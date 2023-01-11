@@ -1,5 +1,5 @@
-output "function_name" { 
-  value = aws_lambda_function.function.arn 
+output "function_name" {
+  value = aws_lambda_function.function.arn
 }
 
 output "dynamodb_state_table" {
