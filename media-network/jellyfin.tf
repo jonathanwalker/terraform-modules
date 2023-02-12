@@ -1,41 +1,39 @@
 resource "aws_ecs_task_definition" "jellyfin" {
   family = "jellyfin-media-server"
 
-  container_definitions = <<EOF
-[
-  {
-    name: "jellyfin",
-    image: "jellyfin/jellyfin:latest",
-    memory: 512,
-    environment: [
-      {"name": "JELLYFIN_PublishedServerUrl", "value": "http://${var.dns_name}"}
-    ],
-    portMappings: [
-      {
-        containerPort: 8096,
-        hostPort: 8096
-      }
-    ],
-    environment: [
-      {
-        name: "PUID",
-        value: "1000"
-      },
-      {
-        name: "PGID",
-        value: "1000"
-      }
-    ],
-    mountPoints: [
-      {
-        sourceVolume: "media",
-        containerPath: "/media",
-        readOnly: false
-      }
-    ]
-  }
-]
-EOF
+  container_definitions = jsonencode([
+    {
+      name: "jellyfin",
+      image: "jellyfin/jellyfin:latest",
+      memory: 512,
+      environment: [
+        {"name": "JELLYFIN_PublishedServerUrl", "value": "http://${var.dns_name}"}
+      ],
+      portMappings: [
+        {
+          containerPort: 8096,
+          hostPort: 8096
+        }
+      ],
+      environment: [
+        {
+          name: "PUID",
+          value: "1000"
+        },
+        {
+          name: "PGID",
+          value: "1000"
+        }
+      ],
+      mountPoints: [
+        {
+          sourceVolume: "media",
+          containerPath: "/media",
+          readOnly: false
+        }
+      ]
+    }
+  ])
 
   volume {
     name = "media"
