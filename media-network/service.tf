@@ -17,6 +17,19 @@ resource "aws_ecs_service" "jellyfin" {
     container_port   = 8096
     container_name   = "jellyfin"
   }
+
+  depends_on = [
+    aws_ecs_task_definition.jellyfin,
+    aws_ecs_cluster.cluster,
+    aws_security_group.jellyfin,
+    aws_security_group_rule.jellyfin_ingress,
+    aws_alb.jellyfin,
+    aws_alb_listener.jellyfin,
+    aws_alb_target_group.jellyfin,
+    aws_security_group.jellyfin_alb,
+    aws_security_group_rule.alb_ingress,
+    aws_route53_record.jellyfin
+  ]
 }
 
 resource "aws_security_group" "jellyfin" {
