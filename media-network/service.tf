@@ -6,12 +6,10 @@ resource "aws_ecs_service" "jellyfin" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    awsvpc_configuration {
-      subnets = var.private_subnets
-      security_groups = [
-        aws_security_group.jellyfin.id
-      ]
-    }
+    subnets = var.private_subnets
+    security_groups = [
+      aws_security_group.jellyfin.id
+    ]
   }
 
   load_balancer {
