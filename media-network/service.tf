@@ -21,6 +21,7 @@ resource "aws_ecs_service" "jellyfin" {
 
 resource "aws_security_group" "jellyfin" {
   name = "jellyfin-security-group"
+  vpc_id = var.vpc_id
 
   tags = var.tags
 }
@@ -52,6 +53,7 @@ resource "aws_alb_target_group" "jellyfin" {
 
 resource "aws_security_group" "jellyfin_alb" {
   name = "jellyfin-alb-security-group"
+  vpc_id = var.vpc_id
 
   tags = var.tags
 }

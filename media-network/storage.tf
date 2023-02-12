@@ -17,6 +17,8 @@ resource "aws_security_group" "efs" {
   name        = "jellyfin-media-security-group"
   description = "Allow NFS traffic"
 
+  vpc_id = var.vpc_id
+
   tags = var.tags
 }
 
