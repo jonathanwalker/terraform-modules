@@ -49,6 +49,8 @@ resource "aws_alb_target_group" "jellyfin" {
   port      = 8096
   protocol  = "TCP"
   vpc_id    = var.vpc_id
+  
+  target_type = "ip"
 }
 
 resource "aws_security_group" "jellyfin_alb" {
