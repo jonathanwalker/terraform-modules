@@ -18,6 +18,15 @@ resource "aws_ecs_task_definition" "jellyfin" {
           hostPort: 8096
         }
       ],
+      logConfiguration: {
+          logDriver: awslogs,
+          options: {
+              awslogs-create-group: true,
+              awslogs-group: "awslogs-jellyfin",
+              awslogs-region: "us-east-1",
+              awslogs-stream-prefix: "awslogs-example"
+          }
+      },
       environment: [
         {
           name: "PUID",
