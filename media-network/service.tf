@@ -77,18 +77,6 @@ resource "aws_alb_target_group" "jellyfin" {
   target_type = "ip"
 }
 
-data "aws_ecs_task" "jellyfin" {
-  cluster = aws_ecs_cluster.cluster.id
-  task_definition = aws_ecs_task_definition.jellyfin.arn
-}
-
-# add ecs service to the target group
-resource "aws_alb_target_group_attachment" "jellyfin" {
-  target_group_arn = aws_alb_target_group.jellyfin.arn
-  target_id        = data.aws_ecs_task.jellyfin.task_arn
-  port             = 8096
-}
-
 resource "aws_security_group" "jellyfin_alb" {
   name = "jellyfin-alb-security-group"
   vpc_id = var.vpc_id
