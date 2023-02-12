@@ -2,8 +2,8 @@ resource "aws_ecs_task_definition" "jellyfin" {
   family = "jellyfin-media-server"
   network_mode = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu = 512
-  memory = 1024
+  cpu = 4096
+  memory = 8192
 
   container_definitions = jsonencode([
     {
