@@ -92,8 +92,7 @@ data "aws_iam_policy_document" "ecs_task_execution_role" {
     actions = [
       "logs:CreateLogStream",
       "logs:PutLogEvents",
-      "logs:CreateLogGroup",
-      "logs:PutLogEvents"
+      "logs:CreateLogGroup"
     ]
 
     resources = [
