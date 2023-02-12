@@ -14,6 +14,7 @@ resource "aws_ecs_service" "jellyfin" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.jellyfin.arn
+    container_port   = 8096
   }
 }
 
