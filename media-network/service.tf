@@ -60,7 +60,7 @@ resource "aws_alb" "jellyfin" {
 resource "aws_alb_listener" "jellyfin" {
   load_balancer_arn = aws_alb.jellyfin.arn
   port              = "8096"
-  protocol          = "TCP"
+  protocol          = "HTTP"
 
   default_action {
     type             = "forward"
@@ -71,7 +71,7 @@ resource "aws_alb_listener" "jellyfin" {
 resource "aws_alb_target_group" "jellyfin" {
   name      = "jellyfin-target-group"
   port      = 8096
-  protocol  = "TCP"
+  protocol  = "HTTP"
   vpc_id    = var.vpc_id
 
   target_type = "ip"
