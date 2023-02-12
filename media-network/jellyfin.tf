@@ -7,6 +7,9 @@ resource "aws_ecs_task_definition" "jellyfin" {
     name: "jellyfin",
     image: "jellyfin/jellyfin:latest",
     memory: 512,
+    environment: [
+      {"name": "JELLYFIN_PublishedServerUrl", "value": "http://${var.dns_name}"}
+    ],
     portMappings: [
       {
         containerPort: 8096,
@@ -40,13 +43,7 @@ EOF
       file_system_id     = aws_efs_file_system.media.id
       root_directory     = "/media"
       transit_encryption = "ENABLED"
-      file_system_arn    = aws_efs_file_system.media.arn
     }
-  }
-
-  environment {
-    name  = "JELLYFIN_PublishedServerUrl"
-    value = "http://${var.dns_name}"
   }
 }
 

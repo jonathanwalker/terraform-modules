@@ -64,8 +64,8 @@ resource "aws_route53_record" "jellyfin" {
   type    = "A"
   zone_id = var.zone_id
   alias {
-    name                   = aws_lb.jellyfin.dns_name
-    zone_id                = aws_lb.jellyfin.zone_id
+    name                   = aws_alb.jellyfin.dns_name
+    zone_id                = aws_alb.jellyfin.zone_id
     evaluate_target_health = true
   }
 }
