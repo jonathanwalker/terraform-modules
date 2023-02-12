@@ -60,7 +60,7 @@ resource "aws_alb" "jellyfin" {
 resource "aws_alb_listener" "jellyfin" {
   load_balancer_arn = aws_alb.jellyfin.arn
   port              = "8096"
-  protocol          = "HTTP"
+  protocol          = "TCP"
 
   default_action {
     type             = "forward"
