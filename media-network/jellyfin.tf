@@ -11,9 +11,6 @@ resource "aws_ecs_task_definition" "jellyfin" {
       image: "jellyfin/jellyfin:latest",
       memory: 8192,
       cpu: 4096,
-      environment: [
-        {"name": "JELLYFIN_PublishedServerUrl", "value": "http://${var.dns_name}"}
-      ],
       portMappings: [
         {
           containerPort: 8096,
@@ -28,6 +25,10 @@ resource "aws_ecs_task_definition" "jellyfin" {
         {
           name: "PGID",
           value: "1000"
+        },
+        {
+          name: "JELLYFIN_PublishedServerUrl",
+          value: "http://${var.dns_name}"
         }
       ],
       mountPoints: [
