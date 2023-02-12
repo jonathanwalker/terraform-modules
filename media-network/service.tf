@@ -1,7 +1,7 @@
 resource "aws_ecs_service" "jellyfin" {
   name            = "jellyfin-service"
   task_definition = aws_ecs_task_definition.jellyfin.arn
-  cluster         = aws_ecs_cluster.jellyfin.id
+  cluster         = aws_ecs_cluster.cluster.id
   desired_count   = 1
   launch_type     = "FARGATE"
 
