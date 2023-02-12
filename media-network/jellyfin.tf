@@ -9,7 +9,8 @@ resource "aws_ecs_task_definition" "jellyfin" {
     {
       name: "jellyfin",
       image: "jellyfin/jellyfin:latest",
-      memory: 512,
+      memory: 8192,
+      cpu: 4096,
       environment: [
         {"name": "JELLYFIN_PublishedServerUrl", "value": "http://${var.dns_name}"}
       ],
