@@ -1,6 +1,7 @@
 resource "aws_ecs_task_definition" "jellyfin" {
   family = "jellyfin-media-server"
   network_mode = "awsvpc"
+  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
   requires_compatibilities = ["FARGATE"]
   cpu = 4096
   memory = 8192
@@ -51,3 +52,47 @@ resource "aws_ecs_task_definition" "jellyfin" {
   }
 }
 
+# IAM Role for the ECS Task
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "jellyfin-ecs-task-execution-role"
+
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+
+  tags = var.tags
+}
+
+data "aws_iam_policy_document" "assume_role_policy" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sts:AssumeRole",
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "ecs_task_execution_role" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+
+    resources = [
+      "arn:aws:logs:*:*:*",
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "ecs_task_execution_role" {
+  name = "jellyfin-ecs-task-execution-role"
+  role = aws_iam_role.ecs_task_execution_role.id
+  policy = data.aws_iam_policy_document.ecs_task_execution_role.json
+}
