@@ -43,6 +43,13 @@ resource "aws_alb" "jellyfin" {
   subnets = var.public_subnets
 }
 
+resource "aws_alb_target_group" "jellyfin" {
+  name      = "jellyfin-target-group"
+  port      = 8096
+  protocol  = "TCP"
+  vpc_id    = var.vpc_id
+}
+
 resource "aws_security_group" "jellyfin_alb" {
   name = "jellyfin-alb-security-group"
 
