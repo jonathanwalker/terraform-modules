@@ -25,7 +25,7 @@ resource "aws_security_group" "jellyfin" {
   tags = var.tags
 }
 
-resource "aws_security_group_rule" "ingress" {
+resource "aws_security_group_rule" "jellyfin_ingress" {
   type                     = "ingress"
   from_port                = 8096
   to_port                  = 8096
@@ -49,7 +49,7 @@ resource "aws_security_group" "jellyfin_alb" {
   tags = var.tags
 }
 
-resource "aws_security_group_rule" "ingress" {
+resource "aws_security_group_rule" "alb_ingress" {
   type              = "ingress"
   from_port         = 8096
   to_port           = 8096
