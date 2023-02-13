@@ -105,7 +105,7 @@ data "aws_iam_policy_document" "ecs_task_execution_role" {
 
   statement {
     effect = "Allow"
-    action = [
+    actions = [
       "elasticfilesystem:DescribeFileSystems",
       "elasticfilesystem:DescribeMountTargets",
       "elasticfilesystem:DescribeMountTargetSecurityGroups",
@@ -114,9 +114,10 @@ data "aws_iam_policy_document" "ecs_task_execution_role" {
     ]
     resource = "*"
   }
+  
   statement {
     effect = "Allow"
-    action = [
+    actions = [
       "elasticfilesystem:MountTarget",
       "elasticfilesystem:ListTagsForResource"
     ]
