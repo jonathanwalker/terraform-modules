@@ -107,7 +107,9 @@ resource "aws_security_group_rule" "alb_egress" {
   from_port         = 8096
   to_port           = 8096
   protocol          = "tcp"
-  security_group_id = aws_security_group.jellyfin.id
+  security_group_id = aws_security_group.jellyfin_alb.id
+  
+  source_security_group_id = aws_security_group.jellyfin.id
 }
 
 resource "aws_route53_record" "jellyfin" {
