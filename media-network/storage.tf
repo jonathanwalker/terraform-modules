@@ -44,8 +44,8 @@ resource "aws_efs_access_point" "media" {
   root_directory {
     path = "/media"
     creation_info {
-      owner_gid = 1000
-      owner_uid = 1000
+      owner_gid   = 1000
+      owner_uid   = 1000
       permissions = "0777"
     }
   }

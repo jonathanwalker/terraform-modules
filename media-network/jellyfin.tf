@@ -1,54 +1,54 @@
 resource "aws_ecs_task_definition" "jellyfin" {
-  family = "jellyfin-media-server"
-  network_mode = "awsvpc"
-  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+  family                   = "jellyfin-media-server"
+  network_mode             = "awsvpc"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   requires_compatibilities = ["FARGATE"]
-  cpu = 4096
-  memory = 8192
+  cpu                      = 4096
+  memory                   = 8192
 
   container_definitions = jsonencode([
     {
-      name: "jellyfin",
-      image: "jellyfin/jellyfin:latest",
-      memory: 8192,
-      cpu: 4096,
-      portMappings: [
+      name : "jellyfin",
+      image : "jellyfin/jellyfin:latest",
+      memory : 8192,
+      cpu : 4096,
+      portMappings : [
         {
-          containerPort: 8096,
-          hostPort: 8096
+          containerPort : 8096,
+          hostPort : 8096
         }
       ],
-      logConfiguration: {
-          logDriver: "awslogs",
-          options: {
-              awslogs-create-group: "true",
-              awslogs-group: "awslogs-jellyfin",
-              awslogs-region: "us-east-1",
-              awslogs-stream-prefix: "awslogs-example"
-          }
+      logConfiguration : {
+        logDriver : "awslogs",
+        options : {
+          awslogs-create-group : "true",
+          awslogs-group : "awslogs-jellyfin",
+          awslogs-region : "us-east-1",
+          awslogs-stream-prefix : "awslogs-example"
+        }
       },
-      command: [
+      command : [
         "apt update && apt install -y efs-utils && mkdir -p /media && mount -t efs -o tls ${aws_efs_file_system.media.id}:/ /media && /usr/local/bin/jellyfin -d /media"
       ],
-      environment: [
+      environment : [
         {
-          name: "PUID",
-          value: "1000"
+          name : "PUID",
+          value : "1000"
         },
         {
-          name: "PGID",
-          value: "1000"
+          name : "PGID",
+          value : "1000"
         },
         {
-          name: "JELLYFIN_PublishedServerUrl",
-          value: "http://${var.dns_name}"
+          name : "JELLYFIN_PublishedServerUrl",
+          value : "http://${var.dns_name}"
         }
       ],
-      mountPoints: [
+      mountPoints : [
         {
-          sourceVolume: "media",
-          containerPath: "/media",
-          readOnly: false
+          sourceVolume : "media",
+          containerPath : "/media",
+          readOnly : false
         }
       ]
     }
@@ -112,21 +112,21 @@ data "aws_iam_policy_document" "ecs_task_execution_role" {
       "ec2:DescribeSecurityGroups",
       "ec2:DescribeSubnets"
     ]
-    resource = "*"
+    resources = ["*"]
   }
-  
+
   statement {
     effect = "Allow"
     actions = [
       "elasticfilesystem:MountTarget",
       "elasticfilesystem:ListTagsForResource"
     ]
-    resource = [aws_efs_file_system.media.arn]
+    resources = [aws_efs_file_system.media.arn]
   }
 }
 
 resource "aws_iam_role_policy" "ecs_task_execution_role" {
-  name = "jellyfin-ecs-task-execution-role"
-  role = aws_iam_role.ecs_task_execution_role.id
+  name   = "jellyfin-ecs-task-execution-role"
+  role   = aws_iam_role.ecs_task_execution_role.id
   policy = data.aws_iam_policy_document.ecs_task_execution_role.json
 }

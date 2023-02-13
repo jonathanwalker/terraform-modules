@@ -33,7 +33,7 @@ resource "aws_ecs_service" "jellyfin" {
 }
 
 resource "aws_security_group" "jellyfin" {
-  name = "jellyfin-security-group"
+  name   = "jellyfin-security-group"
   vpc_id = var.vpc_id
 
   tags = var.tags
@@ -87,16 +87,16 @@ resource "aws_alb_listener" "jellyfin" {
 }
 
 resource "aws_alb_target_group" "jellyfin" {
-  name      = "jellyfin-target-group"
-  port      = 8096
-  protocol  = "HTTP"
-  vpc_id    = var.vpc_id
+  name     = "jellyfin-target-group"
+  port     = 8096
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
 
   target_type = "ip"
 }
 
 resource "aws_security_group" "jellyfin_alb" {
-  name = "jellyfin-alb-security-group"
+  name   = "jellyfin-alb-security-group"
   vpc_id = var.vpc_id
 
   tags = var.tags
