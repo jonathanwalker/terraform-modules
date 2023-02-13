@@ -6,8 +6,10 @@ resource "aws_efs_file_system" "media" {
 }
 
 resource "aws_efs_mount_target" "media" {
+  for_each = toset(var.private_subnets)
+
   file_system_id = aws_efs_file_system.media.id
-  subnet_id      = var.private_subnets[0]
+  subnet_id      = each.value
   security_groups = [
     aws_security_group.efs.id
   ]
