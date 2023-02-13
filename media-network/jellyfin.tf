@@ -27,6 +27,9 @@ resource "aws_ecs_task_definition" "jellyfin" {
               awslogs-stream-prefix: "awslogs-example"
           }
       },
+      command: [
+        "apt update && apt install -y efs-utils && mkdir -p /media && mount -t efs -o tls ${aws_efs_file_system.media.id}:/ /media && /usr/local/bin/jellyfin -d /media"
+      ],
       environment: [
         {
           name: "PUID",
