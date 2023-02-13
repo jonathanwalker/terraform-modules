@@ -49,7 +49,7 @@ resource "aws_security_group_rule" "jellyfin_ingress" {
 }
 
 resource "aws_security_group_rule" "jellyfin_ingress_efs" {
-  type                     = "ingress"
+  type                     = "egress"
   from_port                = 2049
   to_port                  = 2049
   protocol                 = "tcp"
