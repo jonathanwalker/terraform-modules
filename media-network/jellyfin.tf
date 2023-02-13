@@ -103,27 +103,25 @@ data "aws_iam_policy_document" "ecs_task_execution_role" {
     ]
   }
 
-    statement = [
-    {
-      effect = "Allow"
-      action = [
-        "elasticfilesystem:DescribeFileSystems",
-        "elasticfilesystem:DescribeMountTargets",
-        "elasticfilesystem:DescribeMountTargetSecurityGroups",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSubnets"
-      ]
-      resource = "*"
-    },
-    {
-      effect = "Allow"
-      action = [
-        "elasticfilesystem:MountTarget",
-        "elasticfilesystem:ListTagsForResource"
-      ]
-      resource = [aws_efs_file_system.media.arn]
-    }
-  ]
+  statement {
+    effect = "Allow"
+    action = [
+      "elasticfilesystem:DescribeFileSystems",
+      "elasticfilesystem:DescribeMountTargets",
+      "elasticfilesystem:DescribeMountTargetSecurityGroups",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSubnets"
+    ]
+    resource = "*"
+  }
+  statement {
+    effect = "Allow"
+    action = [
+      "elasticfilesystem:MountTarget",
+      "elasticfilesystem:ListTagsForResource"
+    ]
+    resource = [aws_efs_file_system.media.arn]
+  }
 }
 
 resource "aws_iam_role_policy" "ecs_task_execution_role" {
