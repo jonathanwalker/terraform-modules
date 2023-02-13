@@ -34,3 +34,19 @@ resource "aws_security_group_rule" "media" {
   protocol    = "tcp"
   cidr_blocks = [var.vpc_cidr]
 }
+
+resource "aws_efs_access_point" "media" {
+  file_system_id = aws_efs_file_system.media.id
+  posix_user {
+    uid = 1000
+    gid = 1000
+  }
+  root_directory {
+    path = "/media"
+    creation_info {
+      owner_gid = 1000
+      owner_uid = 1000
+      permissions = "0777"
+    }
+  }
+}

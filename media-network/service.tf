@@ -48,6 +48,15 @@ resource "aws_security_group_rule" "jellyfin_ingress" {
   security_group_id        = aws_security_group.jellyfin.id
 }
 
+resource "aws_security_group_rule" "jellyfin_ingress_efs" {
+  type                     = "ingress"
+  from_port                = 2049
+  to_port                  = 2049
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.efs.id
+  security_group_id        = aws_security_group.jellyfin.id
+}
+
 resource "aws_security_group_rule" "jellyfin_egress" {
   type              = "egress"
   from_port         = 443
@@ -108,7 +117,7 @@ resource "aws_security_group_rule" "alb_egress" {
   to_port           = 8096
   protocol          = "tcp"
   security_group_id = aws_security_group.jellyfin_alb.id
-  
+
   source_security_group_id = aws_security_group.jellyfin.id
 }
 
