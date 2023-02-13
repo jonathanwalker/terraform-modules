@@ -48,6 +48,15 @@ resource "aws_security_group_rule" "jellyfin_ingress" {
   security_group_id        = aws_security_group.jellyfin.id
 }
 
+resource "aws_security_group_rule" "jellyfin_egress" {
+  type              = "egress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.jellyfin.id
+}
+
 resource "aws_alb" "jellyfin" {
   name     = "jellyfin-alb"
   internal = false
@@ -92,7 +101,6 @@ resource "aws_security_group_rule" "alb_ingress" {
   cidr_blocks       = var.allowed_ips
   security_group_id = aws_security_group.jellyfin_alb.id
 }
-
 
 resource "aws_route53_record" "jellyfin" {
   name    = var.dns_name
