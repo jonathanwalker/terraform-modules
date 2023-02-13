@@ -102,6 +102,14 @@ resource "aws_security_group_rule" "alb_ingress" {
   security_group_id = aws_security_group.jellyfin_alb.id
 }
 
+resource "aws_security_group_rule" "alb_egress" {
+  type              = "egress"
+  from_port         = 8096
+  to_port           = 8096
+  protocol          = "tcp"
+  security_group_id = aws_security_group.jellyfin.id
+}
+
 resource "aws_route53_record" "jellyfin" {
   name    = var.dns_name
   type    = "A"
