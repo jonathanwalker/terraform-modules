@@ -1,14 +1,24 @@
 resource "unifi_network" "vlan" {
-  for_each = var.vlans
+  for_each = var.networks
 
-  site_id     = var.site_id
-  name        = each.value.name
-  network     = each.value.network
-  purpose     = "corporate"
-  subnet      = cidrsubnet(each.value.network, 0, 1)
-  dhcp_server = each.value.dhcp
+  site_id    = "your_site_id"
+  name       = each.value.name
+  purpose    = each.value.purpose
+  subnet     = each.value.subnet
+  ip_forward = true
 
-  vlan_enabled = true
-  vlan_id      = each.value.vlan_id
-  parent_id    = 1
+  gateway {
+    ip = each.value.gateway_ip
+  }
+
+  dhcpd {
+    enabled         = true
+    start           = each.value.dhcp_start
+    stop            = each.value.dhcp_stop
+    domain_name     = "your_network_domain_name"
+    lease_time      = "your_network_lease_time"
+    ntp_server      = "your_network_ntp_server"
+    wins_server     = "your_network_wins_server"
+    excluded_ranges = ["your_network_excluded_range_1", "your_network_excluded_range_2"]
+  }
 }

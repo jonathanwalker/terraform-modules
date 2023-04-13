@@ -20,11 +20,13 @@ variable "unifi_password" {
   sensitive = true
 }
 
-variable "vlans" {
+variable "networks" {
   type = map(object({
-    name     = string
-    vlan_id  = number
-    network  = string
-    dhcp     = bool
+    name       = string
+    purpose    = string
+    subnet     = string
+    gateway_ip = string
+    dhcp_start = string
+    dhcp_stop  = string
   }))
 }
