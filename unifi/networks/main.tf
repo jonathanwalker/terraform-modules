@@ -1,24 +1,19 @@
-resource "unifi_network" "vlan" {
+resource "unifi_network" "networks" {
   for_each = var.networks
 
-  site_id    = "your_site_id"
-  name       = each.value.name
-  purpose    = each.value.purpose
-  subnet     = each.value.subnet
-  ip_forward = true
+  name    = each.value.name
+  purpose = each.value.purpose
+  subnet  = each.value.subnet
+  vlan_id = each.value.vlan_id
+  site    = each.value.site
 
-  gateway {
-    ip = each.value.gateway_ip
-  }
+  dhcp_enabled = true
+  dhcp_start   = each.value.dhcp_start
+  dhcp_stop    = each.value.dhcp_stop
+  dhcp_lease   = 86400
 
-  dhcpd {
-    enabled         = true
-    start           = each.value.dhcp_start
-    stop            = each.value.dhcp_stop
-    domain_name     = "your_network_domain_name"
-    lease_time      = "your_network_lease_time"
-    ntp_server      = "your_network_ntp_server"
-    wins_server     = "your_network_wins_server"
-    excluded_ranges = ["your_network_excluded_range_1", "your_network_excluded_range_2"]
-  }
+  ipv6_ra_enable            = true
+  ipv6_ra_priority          = "medium"
+  ipv6_ra_preferred_lifetime = 14400
+  ipv6_ra_valid_lifetime     = 86400
 }

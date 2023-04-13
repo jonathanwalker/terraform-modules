@@ -22,11 +22,10 @@ variable "unifi_password" {
 
 variable "networks" {
   type = map(object({
-    name       = string
-    purpose    = string
-    subnet     = string
-    gateway_ip = string
-    dhcp_start = string
-    dhcp_stop  = string
+    name    = string
+    purpose = string
+    subnet  = string
+    vlan_id = number
+    site    = string
   }))
 }
