@@ -8,8 +8,8 @@ terraform {
 }
 
 provider "unifi" {
-  username = "${env.UNIFI_USERNAME}"
-  password = "${env.UNIFI_PASSWORD}"
+  username = var.unifi_username
+  password = var.unifi_password
   url = var.unifi_url
 
   allow_insecure = true # no valid cert yet

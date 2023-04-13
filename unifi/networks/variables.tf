@@ -8,6 +8,18 @@ variable "site_id" {
   default = "default"
 }
 
+variable "unifi_username" {
+  type    = string
+  default = "admin"
+  sensitive = true
+}
+
+variable "unifi_password" {
+  type    = string
+  default = "admin"
+  sensitive = true
+}
+
 variable "vlans" {
   type = map(object({
     name     = string
