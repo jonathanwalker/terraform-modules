@@ -22,9 +22,6 @@ resource "aws_cloudfront_distribution" "distribution" {
     }
   }
 
-  ###
-  # Plausible Analytics https://plausible.io/docs/proxy/guides/cloudfront
-  ### 
   dynamic "origin" {
     for_each = var.enable_plausible_analytics ? [1] : []
     content {
