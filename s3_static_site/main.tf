@@ -87,20 +87,6 @@ resource "aws_cloudfront_distribution" "distribution" {
     }
   }
 
-  # Custom error response
-  custom_error_response {
-    error_caching_min_ttl = 0
-    error_code            = 403
-    response_code         = 200
-    response_page_path    = var.error_page
-  }
-  custom_error_response {
-    error_caching_min_ttl = 0
-    error_code            = 404
-    response_code         = 200
-    response_page_path    = var.error_page
-  }
-
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
