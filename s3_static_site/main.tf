@@ -167,7 +167,7 @@ resource "aws_cloudfront_distribution" "distribution" {
 
 # cloudfront security headers
 resource "aws_cloudfront_response_headers_policy" "headers" {
-  name    = "${var.domain_name}-headers"
+  name    = "replace(var.domain_name, ".", "-")-headers"
   comment = "Headers for ${var.domain_name}"
 
   cors_config {
